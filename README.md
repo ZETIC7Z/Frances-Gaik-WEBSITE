@@ -7,7 +7,14 @@ background film, an animated signature intro, and an interactive book showcase.
 
 **Live site → [lifecoachdoc.vercel.app](https://lifecoachdoc.vercel.app)**
 
-[![Live site](docs/live-site.jpg)](https://lifecoachdoc.vercel.app)
+| Desktop | Mobile |
+| :---: | :---: |
+| [![Dr. Fran Gaik — desktop](docs/live-site.jpg)](https://lifecoachdoc.vercel.app) | <img src="docs/live-site-mobile.jpg" width="300" alt="Dr. Fran Gaik — mobile" /> |
+
+Both captures are of the production deployment, and the mobile one is a real 390×844
+browser capture rather than a mockup — re-take them any time with
+`npm run check:production -- <url>`, which writes fresh screenshots to
+`.freebuff/production/`.
 
 > All clinical copy is ingested from the author's original site
 > ([lifecoachdoc.net](https://www.lifecoachdoc.net/welcome.html)) and verified retailer
@@ -72,6 +79,8 @@ having a title but no card.
   cut off — headline and portrait both survive), framed with rounded corners, a drop shadow
   and the domain, and the file is emitted as a 4:4:4 JPEG because it is a photograph of a
   page and the ~7× size saving keeps the crawler fetch instant.
+- **Social safety net**: the manifest, sitemap, description and `og:image:alt` are all
+  generated from the same constants, so a rename cannot leave them disagreeing.
 - **Per-route metadata files**: `app/sitemap.ts`, `app/robots.ts`, `app/manifest.ts`.
   The sitemap carries `lastModified` from `site.syncedAt` (when the copy was last verified
   against the author's sources) rather than the build date, and declares the card image for
@@ -83,8 +92,6 @@ having a title but no card.
   Willowbrook address) and both `Book`s with ISBN, page count, publisher and a priced
   `Offer`. There is deliberately **no `aggregateRating`** — inventing a rating count to win
   a rich snippet would misrepresent the sources the reviews come from.
-- **Social safety net**: the meta description, `og:image:alt` and the manifest all come from
-  the same constants.
 
 ### Verifying it after a deploy
 

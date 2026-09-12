@@ -208,6 +208,112 @@ for (const asset of staticAssets) {
   }
 }
 
+// --------------------------------------------------------- interactions -----
+/**
+ * A build can pass every static check and still be broken for a visitor: an
+ * image that never paints, a film that never plays, a toggle that does not
+ * recolour anything, a link that does not navigate. These are those checks.
+ */
+{
+  // A first-time visitor's mode follows their OS, which also decides which way
+  // the header toggle points. Pinning the colour scheme to dark makes the run
+  // deterministic while still exercising that first-visit default.
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    colorScheme: 'dark',
+  });
+  await context.addInitScript(() => sessionStorage.setItem('fg-intro-played', '1'));
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+  });
+
+  await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 90_000 });
+  await page.waitForSelector('.hero__title', { timeout: 60_000 });
+  await page.waitForTimeout(2500);
+
+  const images = await page.evaluate(() =>
+    [...document.images].map((image) => ({
+      src: image.currentSrc || image.src,
+      width: image.naturalWidth,
+      complete: image.complete,
+    })),
+  );
+  const brokenImages = images.filter((image) => image.complete && image.width === 0);
+  check('every image on the home page paints', brokenImages.length === 0,
+    brokenImages.map((image) => image.src).join(', '));
+  check('the home page requests the optimised portrait',
+    images.some((image) => image.src.includes('/_next/image')), 'no optimised image found');
+
+  const film = await page.evaluate(() => {
+    const video = document.querySelector('.ambient__video');
+    return video
+      ? { paused: video.paused, readyState: video.readyState, width: video.videoWidth }
+      : null;
+  });
+  check('the ambient film plays in the browser', Boolean(film) && film.paused === false && film.readyState >= 2,
+    JSON.stringify(film));
+
+  const modeToggle = page.locator('button[aria-label^="Switch to "]');
+  const toggleLabel = await modeToggle.getAttribute('aria-label');
+  check('the mode toggle reflects a dark-scheme first visit',
+    toggleLabel === 'Switch to light mode', toggleLabel ?? 'not found');
+
+  const bgBefore = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),
+  );
+  await modeToggle.click();
+  await page.waitForTimeout(500);
+  const toggled = await page.evaluate(() => ({
+    bg: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),
+    mode: localStorage.getItem('fg-mode'),
+  }));
+  check('the light/dark toggle recolours the page', toggled.bg !== bgBefore && toggled.mode === 'light',
+    `${bgBefore} → ${toggled.bg} (stored ${toggled.mode})`);
+  await modeToggle.click();
+  await page.waitForTimeout(300);
+
+  await page.click('button[aria-label="Choose theme"]');
+  const palettes = page.locator('[role="listbox"][aria-label="Theme palettes"] button');
+  const paletteCount = await palettes.count();
+  check('the palette picker lists every palette', paletteCount === 10, `${paletteCount} palettes`);
+  if (paletteCount > 1) {
+    await palettes.nth(1).click();
+    await page.waitForTimeout(500);
+    const applied = await page.evaluate(() => ({
+      theme: localStorage.getItem('fg-theme'),
+      primary: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(),
+    }));
+    check('choosing a palette applies it', applied.theme === 'cobalt-aurora', JSON.stringify(applied));
+  }
+
+  // The palette popover owns Escape while it is open, so close it here — and
+  // prove that it does, since a popover that traps focus is worse than none.
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  check('Escape closes the palette menu',
+    (await page.locator('[role="listbox"][aria-label="Theme palettes"]').count()) === 0);
+
+  await page.click('nav[aria-label="Primary"] a[href="/books"]');
+  await page.waitForURL('**/books', { timeout: 30_000 });
+  await page.waitForSelector('h1', { timeout: 30_000 });
+  check('primary navigation reaches /books', new URL(page.url()).pathname === '/books', page.url());
+
+  const lookInside = page.locator('button:visible', { hasText: 'Look inside' }).first();
+  await lookInside.scrollIntoViewIfNeeded();
+  await lookInside.click();
+  await page.waitForSelector('.modal-backdrop', { timeout: 20_000 });
+  check('the book dialog opens', await page.locator('[role="dialog"]').first().isVisible());
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(800);
+  check('Escape closes the book dialog', (await page.locator('.modal-backdrop').count()) === 0);
+
+  check('interactions log no console errors', errors.length === 0, errors.join(' | '));
+  await context.close();
+}
+
 // ------------------------------------------------------------- captures -----
 {
   const cases = [
@@ -215,6 +321,9 @@ for (const asset of staticAssets) {
     ['tablet', { width: 834, height: 1000 }],
     ['mobile', { width: 390, height: 844 }],
   ];
+
+  // Captures are the record of what a visitor saw, so they are taken from the
+  // same production URL the checks above just audited.
   for (const [name, viewport] of cases) {
     const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
     await context.addInitScript(() => sessionStorage.setItem('fg-intro-played', '1'));

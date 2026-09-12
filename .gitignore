@@ -40,3 +40,7 @@ scripts/brand-source.svg
 .dev*.log
 .check-*.mjs
 Screenshot_*.png
+
+# vercel CLI link state and local env
+.vercel
+.env*
