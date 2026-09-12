@@ -1,0 +1,12 @@
+# The platform builds from source — a local build directory is noise, and on
+# Windows it is also unusable there. Upload the sources only.
+.next
+.vercel
+node_modules
+tsconfig.tsbuildinfo
+
+# Local verification scratch (screenshots, dev logs, one-off check scripts)
+.freebuff
+.dev*.log
+.check-*.mjs
+Screenshot_*.png
