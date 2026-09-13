@@ -14,19 +14,18 @@
 ## 2. Core Architecture & Styling Engine
 - **CSS Architecture:** Pure BEM CSS in `app/globals.css` (No Tailwind).
 - **Navigation:**
-  - Floating pill navbar (`.fnav-pill`) with inner glass capsule (`.fnav-capsule`).
+  - Floating pill navbar (`.fnav-pill`) with completely transparent top state (`fnav-header`) that smoothly transforms into a rounded floating frosted glass pill on scroll (`fnav-pill--scrolled`).
   - Active route indicator dot and spring hover pill (`layoutId="nav-hover-pill"`).
   - Theme Switcher with 4 color modes: `jade` (Botanical Jade), `sakura` (Cherry Blossom), `gold` (Golden Amber), `dusk` (Obsidian Dusk).
   - Mobile slide-down drawer (`.fnav-drawer`) with primary navigation, practice links, theme swatches, and "Get the Book" CTA.
+- **Hero Clean Presentation:**
+  - Single-column balanced layout (`.hero__grid--single`) allowing the sacred Buddha and monk ambient meditation video loop to be completely visible without clutter.
+  - Dedicated biography and credentials presented on `/about`.
 - **Cinematic Signature Splash Intro:**
   - File: `components/SignatureSplash.tsx`.
-  - Transparent dark veil overlay (`.splash__dark-veil`) sitting on top of `<AmbientBackground />` video loop (`/video/ambient-loop.mp4`).
+  - Transparent dark veil overlay sitting on top of `<AmbientBackground />` video loop (`/video/ambient-loop.mp4`).
   - Pure cursive signature writing animation (`/brand/logo-amber.png`) traced with a dynamic glowing traveling pen nib & spark particles.
-  - No text clutter on splash screen.
-  - Dismissable instantly on any click, touch, scroll, keyboard event, or "Skip Intro" button.
-- **Mobile View Optimizations:**
-  - Centered "Swipe down to discover" cue (`HeroScrollCue.tsx`) on mobile viewports.
-  - Author photo hidden on mobile hero (`@media (max-width: 768px) .hero__author-reveal { display: none }`), redirecting visitors to `/about`.
+  - Auto-dismisses smoothly after intro completion or immediately on user interaction.
 
 ---
 
