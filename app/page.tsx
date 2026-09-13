@@ -42,12 +42,6 @@ export default function HomePage() {
 
               <HeroScrollCue />
 
-              <div className="hero__chips">
-                {hero.chips.map((c) => (
-                  <span key={c} className="chip">{c}</span>
-                ))}
-              </div>
-
               <div className="hero__ctas">
                 <Link href={hero.primaryCta.href} className="btn btn--primary">
                   {hero.primaryCta.label}
