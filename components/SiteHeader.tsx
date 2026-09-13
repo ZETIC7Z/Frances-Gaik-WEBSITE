@@ -97,14 +97,20 @@ export default function SiteHeader() {
         <div className="fnav-pill__inner">
           {/* Brand */}
           <Link href="/" className="fnav-brand" aria-label="Dr. Fran Gaik — home">
-            <div className="fnav-brand__badge">
-              <Sparkle size={14} className="fnav-brand__sparkle" />
+            <div className="fnav-brand__avatar">
+              <Image
+                src="/brand/buddha-mark.png"
+                alt="Dr. Fran Gaik avatar"
+                width={40}
+                height={40}
+                className="fnav-brand__avatar-img"
+              />
             </div>
             <Image
               src="/brand/logo-amber.png"
               alt="Dr. Fran Gaik — signature"
-              width={160}
-              height={38}
+              width={200}
+              height={48}
               priority
               className="fnav-brand__logo"
             />

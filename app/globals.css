@@ -379,32 +379,40 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
 .fnav-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
   padding-left: 6px;
   text-decoration: none;
   flex-shrink: 0;
 }
 
-.fnav-brand__badge {
-  width: 30px;
-  height: 30px;
+.fnav-brand__avatar {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(251, 191, 36, 0.6);
+  box-shadow: 0 0 14px -2px var(--primary-glow);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle, var(--primary-glow), rgba(0, 0, 0, 0.7));
-  border: 1px solid var(--border-strong);
-  color: var(--primary);
-  box-shadow: 0 0 12px -2px var(--primary-glow);
-  transition: transform 0.3s ease;
+  background: #000;
 }
 
-.fnav-brand:hover .fnav-brand__badge {
-  transform: scale(1.08) rotate(12deg);
+.fnav-brand:hover .fnav-brand__avatar {
+  transform: scale(1.08);
+}
+
+.fnav-brand__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .fnav-brand__logo {
-  height: 36px;
+  height: 45px;
   width: auto;
   transition: opacity 0.2s ease;
 }
