@@ -23,44 +23,43 @@ export function Stars({ rating, stars, size = 'md' }: { rating?: string; stars?:
 }
 
 /**
- * The review's source site, shown with that site's OWN logo (the artwork the
- * outlet publishes for itself) so you can see at a glance where a quote came
- * from. Compact cards use the square mark; the full reading view uses the
- * wordmark plus the outlet's name. Sources we hold no artwork for fall back to
- * a neutral initials tile.
+ * The review's source site, shown with that site's OWN logo — the same white
+ * plate, logo-only badge the store buttons use — so you can see at a glance
+ * where a quote came from, on a compact card and in the full reading view
+ * alike. An outlet we hold no artwork for names itself on the same plate.
  */
 export function SourceMark({ platform, host, full = false }: { platform: string; host?: string; full?: boolean }) {
   const logo = sourceLogoFor(platform);
 
   if (!logo) {
-    const words = platform.split(/[\s.&]+/).filter(Boolean);
-    const initials = (
-      words.length > 1 ? words.slice(0, 2).map((word) => word[0]).join('') : words[0].slice(0, 2)
-    ).toUpperCase();
-
     return (
-      <span className="rvmark" title={`Review source: ${host ? `${platform} (${host})` : platform}`}>
-        <span className="rvmark__tile" aria-hidden>
-          {initials}
+      <span
+        className={`rvmark${full ? ' rvmark--full' : ''}`}
+        title={`Review source: ${host ? `${platform} (${host})` : platform}`}
+      >
+        <span className="rvmark__plate">
+          <span className="rvmark__text" aria-hidden>
+            {platform}
+          </span>
         </span>
         {full && <span className="rvmark__name">{platform}</span>}
       </span>
     );
   }
 
-  const asset = !full && logo.mark ? { ...logo.mark, alt: `${logo.name} mark` } : { src: logo.src, width: logo.width, height: logo.height, alt: `${logo.name} logo` };
   const site = logo.home.replace(/^https?:\/\//, '');
 
   return (
     <span className={`rvmark${full ? ' rvmark--full' : ''}`} title={`Review source: ${logo.name} — ${site}`}>
-      <span className="rvmark__logo">
+      <span className="rvmark__plate">
         {/* Already-small local PNGs: served as-is rather than re-encoded. */}
         <Image
-          src={asset.src}
-          alt={asset.alt}
-          width={asset.width}
-          height={asset.height}
+          src={logo.src}
+          alt={`${logo.name} logo`}
+          width={logo.width}
+          height={logo.height}
           unoptimized
+          className="rvmark__logo"
         />
       </span>
       {full && <span className="rvmark__name">{logo.name}</span>}

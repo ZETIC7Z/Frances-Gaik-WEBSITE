@@ -21,7 +21,8 @@ export default function ReviewsPage() {
             <h1>What readers said</h1>
             <p className="lead" style={{ maxWidth: 720 }}>
               Collected source-attributed reader and professional reviews of Dr. Gaik’s two
-              published works. Ratings are shown only when the source reports one.
+              published works. Ratings are shown only when the source reports one, and every
+              excerpt links to the page it was published on.
             </p>
           </Reveal>
         </div>
@@ -43,10 +44,11 @@ export default function ReviewsPage() {
 
           <Reveal>
             <div className="disclaimer">
-              <strong>Source attribution.</strong> Review excerpts are reproduced from the
-              author’s original books page, publisher listings, Dorrance customer reviews,
-              Foreword Reviews, and Kirkus Reviews. Ratings are not inferred from editorial
-              language. Read the books and find every purchase link on the{' '}
+              <strong>Source attribution.</strong> Every excerpt here was published on the
+              site it is credited to — the publisher’s listings, a Dorrance customer review,
+              Foreword Reviews, or Kirkus Reviews — and the card links straight to it. Ratings
+              are never inferred from editorial language. Read the books and find every
+              purchase link on the{' '}
               <Link href="/books" style={{ color: 'var(--secondary)' }}>Books page</Link>.
             </div>
           </Reveal>

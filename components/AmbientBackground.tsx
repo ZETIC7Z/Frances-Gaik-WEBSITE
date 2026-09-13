@@ -25,7 +25,15 @@ function mulberry(seed: number) {
  * theme glow — aurora, wash, orbs, mist, leaves — still paints above it, and it
  * drifts with the pointer exactly as the drawn scene did (same 3D parallax).
  */
-const FILM_SRC = '/video/ambient-loop.mp4';
+/**
+ * The film is asked for by a name that looks like nothing to download. A URL
+ * ending in `.mp4` was being intercepted by download managers and by browsers
+ * set to "always download video files", so the backdrop came up as a save
+ * dialog instead of playing; `/media/ambient` is a rewrite onto the same static
+ * asset, still served as `video/mp4` with `Content-Disposition: inline` (see
+ * `next.config.mjs`).
+ */
+const FILM_SRC = '/media/ambient';
 const FILM_POSTER = '/video/ambient-poster.jpg';
 
 export default function AmbientBackground() {

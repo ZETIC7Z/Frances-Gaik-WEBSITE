@@ -136,10 +136,11 @@ export const books: Book[] = [
       'The story of the author’s clinical research study — significant improvement after a two-month period of daily practice.',
       'A full bibliography summarizing East-West research, written in simple layman’s terms.',
     ],
+    // One Amazon listing per book — the print edition readers actually land on
+    // at amazon.com — rather than a Kindle, .ca and marketplace entry for the
+    // same title, which only made the list longer to read.
     stores: [
       { label: 'Amazon.com', href: 'https://www.amazon.com/Managing-Depression-Qigong-Fran-Gaik/dp/1848190182', note: 'Paperback' },
-      { label: 'Amazon — Kindle', href: 'https://www.amazon.com/Managing-Depression-Qigong-Fran-Gaik-ebook/dp/B00ENSWUKS', note: 'eBook' },
-      { label: 'Amazon Canada', href: 'https://www.amazon.ca/Managing-Depression-Qigong-Fran-Gaik/dp/1848190182', note: 'Paperback' },
       { label: 'Singing Dragon', href: 'https://us.singingdragon.com/products/managing-depression-with-qigong', note: 'Publisher' },
       { label: 'Hachette UK', href: 'https://www.hachette.co.uk/titles/fran-gaik/managing-depression-with-qigong/9781848190184/', note: 'UK' },
       { label: 'Bookshop.org UK', href: 'https://uk.bookshop.org/p/books/managing-depression-with-qigong-fran-gaik/71912c22151cd04a', note: 'Indie stores' },
@@ -149,62 +150,21 @@ export const books: Book[] = [
       { label: 'Rakuten Kobo', href: 'https://it.kobo.com/us/es/ebook/managing-depression-with-qigong-1', note: 'eBook' },
       { label: 'Goodreads', href: 'https://www.goodreads.com/en/book/show/6793455-managing-depression-with-qigong', note: 'Rate & review' },
     ],
-    reviews: [
-      {
-        reviewer: 'Amazon.com reader',
-        reviewerRole: 'Reader review',
-        bookId: 'managing-depression-with-qigong',
-        source: 'Amazon.com reader review',
-        platform: 'Amazon',
-        rating: '5 stars',
-        ratingStars: 5,
-        sourceUrl: 'https://www.lifecoachdoc.net/books.html',
-        quote:
-          'Frances Gaik’s Managing Depression with Qigong starts well and just gets better and better… she creates a neat little synthesis of the current state of play in East-West research. Here is a woman who writes straight from the shoulder as if she is talking to you face to face in a counseling session.',
-      },
-      {
-        reviewer: 'epinions.com reader',
-        reviewerRole: 'Reader review',
-        bookId: 'managing-depression-with-qigong',
-        source: 'epinions.com review',
-        platform: 'epinions',
-        rating: '5 stars',
-        ratingStars: 5,
-        sourceUrl: 'https://www.lifecoachdoc.net/books.html',
-        quote:
-          'Meet my newest literary find, Frances Gaik. Sometimes a writer’s persona leaps out from her pages and you find yourself paying as much attention to her as to her message. Whatever gift this author has, I salute her for sharing it with us. The straight-from-the-shoulder, first-person, conversational way she presents her case for qigong as therapy makes it easy to like and respect Fran Gaik the person. Having first made a new friend of me, she next made it easy for me to take my baby steps into Qigong as medicine against depression.',
-      },
-      {
-        reviewer: 'Barnesandnoble.com reviewer',
-        reviewerRole: 'Retailer review',
-        bookId: 'managing-depression-with-qigong',
-        source: 'Barnesandnoble.com review',
-        platform: 'Barnes & Noble',
-        rating: '5 stars',
-        ratingStars: 5,
-        sourceUrl: 'https://www.lifecoachdoc.net/books.html',
-        quote:
-          'A pleasant, chatty, largely convincing essay on Eastern medicine pitched to the general, moderately well educated reader. The author explicitly adopts a conversational “voice” presenting facts and theory as if the reader were sitting before her in her office. The technique works.',
-      },
-      {
-        reviewer: 'Biblio.com reviewer',
-        reviewerRole: 'Rare-book marketplace review',
-        bookId: 'managing-depression-with-qigong',
-        source: 'Biblio.com review',
-        platform: 'Biblio',
-        rating: '5 stars',
-        ratingStars: 5,
-        sourceUrl: 'https://www.lifecoachdoc.net/books.html',
-        quote:
-          'Managing Depression with Qigong is neither the first nor the last word about supplementary treatments of depression and related ailments through alternative, holistic Eastern approaches, especially through Qigong. But it is a darn good, readable, informative, practical up-to-date word.',
-      },
-    ],
+    // Only reviews that can be checked at their own venue are listed. Four
+    // earlier entries were attributed to Amazon, epinions, Barnes & Noble and
+    // Biblio readers while their "verify source" link pointed at the author's
+    // own legacy books page — a link that verified nothing. They were removed
+    // rather than re-labelled, because no venue URL exists for them.
+    reviews: [],
   },
   {
     id: 'dialogues-from-beyond',
     title: 'Dialogues from Beyond',
     subtitle: 'A spiritual memoir exploring consciousness, compassion, and the soul’s journey.',
-    cover: 'https://cdn.shopify.com/s/files/1/0857/3983/1584/files/GaikV_Cover.jpg?v=1744739372',
+    // Served from this origin. The publisher's CDN copy was hot-linked before,
+    // which put a third party between the visitor and the site's own shelf —
+    // and took the whole books section down when that CDN refused a request.
+    cover: '/images/book-dialogues-from-beyond.jpg',
     format: 'Paperback & Kindle',
     pages: '514 pp paperback',
     isbn: '979-8-89211-284-0',
@@ -221,9 +181,8 @@ export const books: Book[] = [
       'A topic-led structure for reflection and reading in short sections.',
     ],
     stores: [
-      { label: 'Amazon — Kindle', href: 'https://www.amazon.com/dp/B0F7C4541V?lv=shuf&channelId=500&plpRedirect=mhFallback', note: 'eBook' },
+      { label: 'Amazon.com', href: 'https://www.amazon.com/dp/B0F7C4541V', note: 'Kindle edition' },
       { label: 'Dorrance Bookstore', href: 'https://bookstore.dorrancepublishing.com/products/dialogues-from-beyond', note: 'Paperback' },
-      { label: 'Dorrance Bookstore — eBook', href: 'https://bookstore.dorrancepublishing.com/products/dialogues-from-beyond', note: 'eBook' },
       { label: 'Booktopia', href: 'https://www.booktopia.com.au/dialogues-from-beyond-dr-frances-gaik/ebook/9798892117821.html', note: 'eBook' },
     ],
     reviews: [
@@ -427,11 +386,15 @@ export const practice = {
   },
 } as const;
 
+/**
+ * Where the copy on this site came from. The author's own legacy pages are the
+ * origin of the biography and practice text; every review, by contrast, links to
+ * the page it was published on, so no review points back here.
+ */
 export const sources = [
   { label: 'Welcome', url: 'https://www.lifecoachdoc.net/welcome.html' },
-  { label: 'Books', url: 'https://www.lifecoachdoc.net/books.html' },
   { label: 'Singing Dragon — Managing Depression with Qigong', url: 'https://us.singingdragon.com/products/managing-depression-with-qigong' },
-  { label: 'Amazon — Dialogues from Beyond', url: 'https://www.amazon.com/dp/B0F7C4541V?lv=shuf&channelId=500&plpRedirect=mhFallback' },
+  { label: 'Amazon — Dialogues from Beyond', url: 'https://www.amazon.com/dp/B0F7C4541V' },
   { label: 'Dorrance — Dialogues from Beyond', url: 'https://bookstore.dorrancepublishing.com/products/dialogues-from-beyond' },
   { label: 'Foreword Reviews — Dialogues from Beyond', url: 'https://www.forewordreviews.com/reviews/dialogues-from-beyond/' },
   { label: 'Kirkus Reviews — Dialogues from Beyond', url: 'https://www.kirkusreviews.com/book-reviews/frances-gaik/dialogues-from-beyond/' },

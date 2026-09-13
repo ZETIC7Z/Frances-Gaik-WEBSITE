@@ -58,17 +58,17 @@ export default function HomePage() {
               </div>
             </Reveal>
 
-            <Reveal delay={140}>
+            <Reveal delay={140} className="hero__author-reveal">
               <div className="hero__author">
                 <div className="hero__author-glow" />
                 <Image
                   src="/images/author-enhanced.jpg"
                   alt="Dr. Fran Gaik"
-                  width={200}
-                  height={264}
+                  width={340}
+                  height={448}
                   priority
+                  sizes="(max-width: 768px) 90vw, 440px"
                   className="author-photo"
-                  style={{ width: 'min(340px, 78vw)', height: 'auto' }}
                 />
                 <p className="author-caption">
                   <strong>{site.name}</strong>

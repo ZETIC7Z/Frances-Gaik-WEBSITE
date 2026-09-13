@@ -1,122 +1,66 @@
 /**
  * REVIEW SOURCE LOGOS
  * ---------------------------------------------------------------------------
- * Where each review was published we show the SOURCE SITE'S OWN LOGO (badge),
- * not initials, so a reader can see at a glance which outlet a quote came from.
+ * Where each review was published we show the SOURCE SITE'S OWN logo — the same
+ * white plate, the same logo-only treatment the store buttons use — so a card
+ * states its outlet at a glance and the whole site reads as one set of badges.
  *
- * Every asset in `public/sources/` was downloaded from the source site itself
- * (its favicon / apple-touch-icon / header wordmark) — e.g. the Dorrance
- * wordmark is the one on dorrancepublishing.com's own header. Nothing here is
- * redrawn or invented, and nothing is hot-linked at runtime.
+ * The artwork is trimmed and re-scaled to one common content height and
+ * committed by `scripts/build-brand-marks.mjs`. Nothing here is redrawn,
+ * invented or hot-linked at runtime.
  *
- * `mark` is the square icon used on the compact cards; `src` is the wordmark
- * used in the full reading view (falls back to the mark when a source has no
- * wordmark asset).
+ * An outlet we hold no artwork for returns nothing. Its card names the outlet on
+ * the same white plate rather than borrowing another brand's logo or showing a
+ * pair of initials — a badge that says "ICNM Journal" is honest; a tile that
+ * says "IJ" is a puzzle.
  */
 
-export type SourceLogoAsset = { src: string; width: number; height: number };
-
 export type SourceLogo = {
-  /** Outlet name as printed by the source. */
+  /** Outlet name as the source prints it. */
   name: string;
   /** The outlet's own site, used for the badge tooltip. */
   home: string;
-  /** Wordmark artwork (wide). */
   src: string;
   width: number;
   height: number;
-  /** Square icon, when the outlet publishes one. */
-  mark?: SourceLogoAsset;
 };
 
+/** Every logo is written at one common content height (44px). */
+const logo = (name: string, home: string, file: string, width: number): SourceLogo => ({
+  name,
+  home,
+  src: `/sources/${file}`,
+  width,
+  height: 44,
+});
+
 const logos: Record<string, SourceLogo> = {
-  amazon: {
-    name: 'Amazon',
-    home: 'https://www.amazon.com',
-    src: '/sources/amazon.png',
-    width: 400,
-    height: 121,
-  },
-  'barnes-and-noble': {
-    name: 'Barnes & Noble',
-    home: 'https://www.barnesandnoble.com',
-    src: '/sources/barnes-and-noble.png',
-    width: 1875,
-    height: 291,
-  },
-  biblio: {
-    name: 'Biblio.com',
-    home: 'https://www.biblio.com',
-    src: '/sources/biblio.png',
-    width: 128,
-    height: 128,
-  },
-  booknews: {
-    name: 'Booknews.com',
-    home: 'https://www.booknews.com',
-    src: '/sources/booknews.png',
-    width: 128,
-    height: 128,
-  },
-  dorrance: {
-    name: 'Dorrance Publishing Co.',
-    home: 'https://bookstore.dorrancepublishing.com',
-    src: '/sources/dorrance.png',
-    width: 600,
-    height: 157,
-    mark: { src: '/sources/dorrance-mark.png', width: 128, height: 128 },
-  },
-  epinions: {
-    name: 'epinions.com',
-    home: 'https://www.epinions.com',
-    src: '/sources/epinions.png',
-    width: 128,
-    height: 128,
-  },
-  foreword: {
-    name: 'Foreword Reviews',
-    home: 'https://www.forewordreviews.com',
-    src: '/sources/foreword.png',
-    width: 128,
-    height: 128,
-  },
-  kirkus: {
-    name: 'Kirkus Reviews',
-    home: 'https://www.kirkusreviews.com',
-    src: '/sources/kirkus.png',
-    width: 32,
-    height: 32,
-  },
-  'singing-dragon': {
-    name: 'Singing Dragon',
-    home: 'https://us.singingdragon.com',
-    src: '/sources/singing-dragon.png',
-    width: 600,
-    height: 150,
-  },
+  amazon: logo('Amazon', 'https://www.amazon.com', 'amazon.png', 145),
+  kirkus: logo('Kirkus Reviews', 'https://www.kirkusreviews.com', 'kirkus.png', 201),
+  foreword: logo('Foreword Reviews', 'https://www.forewordreviews.com', 'foreword.png', 145),
+  'singing-dragon': logo('Singing Dragon', 'https://us.singingdragon.com', 'singing-dragon.png', 176),
+  dorrance: logo('Dorrance Publishing Co.', 'https://bookstore.dorrancepublishing.com', 'dorrance.png', 168),
+  'barnes-and-noble': logo('Barnes & Noble', 'https://www.barnesandnoble.com', 'barnes-and-noble.png', 284),
 };
 
 /** Platform names as they appear in `config/siteData.ts`. */
 const MATCHERS: { key: keyof typeof logos; test: RegExp }[] = [
   { key: 'amazon', test: /amazon/ },
-  { key: 'epinions', test: /epinions/ },
   { key: 'barnes-and-noble', test: /barnes|b&n\b/ },
-  { key: 'biblio', test: /biblio/ },
   { key: 'dorrance', test: /dorrance/ },
   { key: 'foreword', test: /foreword/ },
   { key: 'kirkus', test: /kirkus/ },
+  // A quote carried on the publisher's own product page states its outlet in
+  // the card's own copy, so the publisher's logo is the right badge for it.
   { key: 'singing-dragon', test: /singing\s*dragon|jessica\s*kingsley|hachette/ },
-  { key: 'booknews', test: /booknews/ },
 ];
 
 /**
  * The logo for a review's source, matched on the OUTLET the review is
  * attributed to — never on the URL host. Reviews are routinely quoted on a
- * publisher's or the author's own page (a "Booknews.com" notice hosted on the
- * Singing Dragon product page, an Amazon reader review archived on
- * lifecoachdoc.net), so matching the host would credit the wrong site. When we
- * hold no artwork for the outlet we return nothing and the card falls back to
- * a neutral initials tile.
+ * publisher's page (a "Booknews.com" notice hosted on the Singing Dragon
+ * product page), so matching the host would credit the wrong site. When we hold
+ * no artwork for the outlet we return nothing and the card names it instead.
  */
 export function sourceLogoFor(platform: string): SourceLogo | undefined {
   const label = platform.toLowerCase();

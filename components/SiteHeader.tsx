@@ -4,16 +4,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { nav, practiceNav } from '@/config/siteData';
-import { ModeToggle, ThemeDropdown } from './theme/ThemeControls';
-import { Close, Menu } from './ui/icons';
+import PaletteMenu, { PaletteSwatches } from './theme/PaletteMenu';
+import { Menu, Close, ArrowRight, Sparkle, Book } from './ui/icons';
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const clearMoreTimer = useCallback(() => {
     if (closeTimer.current !== null) {
@@ -27,7 +39,7 @@ export default function SiteHeader() {
     closeTimer.current = window.setTimeout(() => {
       setMoreOpen(false);
       closeTimer.current = null;
-    }, 5000);
+    }, 4000);
   }, [clearMoreTimer]);
 
   const openMore = useCallback(() => {
@@ -40,22 +52,19 @@ export default function SiteHeader() {
     setMoreOpen(false);
   }, [clearMoreTimer]);
 
+  // Close menus on route change
   useEffect(() => {
-    setOpen(false);
     closeMore();
+    setIsMobileMenuOpen(false);
   }, [pathname, closeMore]);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
+  // Click outside to close desktop More dropdown
   useEffect(() => {
     if (!moreOpen) return;
     const onPointerDown = (event: PointerEvent) => {
-      if (moreRef.current && !moreRef.current.contains(event.target as Node)) closeMore();
+      if (moreRef.current && !moreRef.current.contains(event.target as Node)) {
+        closeMore();
+      }
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') closeMore();
@@ -73,138 +82,274 @@ export default function SiteHeader() {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
-  const mainLinks = nav.filter((item) => item.href !== '/contact');
-  const contactLink = nav.find((item) => item.href === '/contact');
+  const allLinks = nav as readonly { label: string; href: string }[];
+  const mainLinks = allLinks.filter((item) => item.href !== '/contact');
+  const contactLink = allLinks.find((item) => item.href === '/contact');
   const moreIsActive = practiceNav.some((item) => isActive(item.href));
 
   return (
-    <>
-      <header className="header">
-        <div className="container header__inner">
-          <Link href="/" className="brand" aria-label="Dr. Fran Gaik — home">
+    <header className="fnav-header">
+      {/* Floating pill navigation */}
+      <nav
+        className={`fnav-pill ${isScrolled ? 'fnav-pill--scrolled' : ''}`}
+        aria-label="Primary"
+      >
+        <div className="fnav-pill__inner">
+          {/* Brand */}
+          <Link href="/" className="fnav-brand" aria-label="Dr. Fran Gaik — home">
+            <div className="fnav-brand__badge">
+              <Sparkle size={14} className="fnav-brand__sparkle" />
+            </div>
             <Image
               src="/brand/logo-amber.png"
-              alt="Dr. Fran Gaik — handwritten signature"
-              width={230}
-              height={55}
+              alt="Dr. Fran Gaik — signature"
+              width={160}
+              height={38}
               priority
-              className="brand__logo"
+              className="fnav-brand__logo"
             />
           </Link>
 
-          <nav className="nav nav--center" aria-label="Primary">
-            {mainLinks.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`nav__link nav__link--caps${isActive(item.href) ? ' nav__link--active' : ''}`}
-                aria-current={isActive(item.href) ? 'page' : undefined}
-              >
-                {item.label}
-              </Link>
-            ))}
+          {/* Desktop Capsule Nav */}
+          <div
+            className="fnav-capsule"
+            onMouseLeave={() => setHoveredLink(null)}
+          >
+            {mainLinks.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`fnav-link ${active ? 'fnav-link--active' : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                  onMouseEnter={() => setHoveredLink(item.href)}
+                >
+                  {hoveredLink === item.href && (
+                    <motion.div
+                      layoutId="nav-hover-pill"
+                      className="fnav-link__hover-pill"
+                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <span className="fnav-link__text">{item.label}</span>
+                  {active && (
+                    <motion.span
+                      layoutId="nav-active-dot"
+                      className="fnav-link__active-dot"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+
             {contactLink && (
               <Link
                 href={contactLink.href}
-                className={`nav__link nav__link--caps${isActive(contactLink.href) ? ' nav__link--active' : ''}`}
+                className={`fnav-link ${isActive(contactLink.href) ? 'fnav-link--active' : ''}`}
                 aria-current={isActive(contactLink.href) ? 'page' : undefined}
+                onMouseEnter={() => setHoveredLink(contactLink.href)}
               >
-                {contactLink.label}
+                {hoveredLink === contactLink.href && (
+                  <motion.div
+                    layoutId="nav-hover-pill"
+                    className="fnav-link__hover-pill"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="fnav-link__text">{contactLink.label}</span>
+                {isActive(contactLink.href) && (
+                  <motion.span
+                    layoutId="nav-active-dot"
+                    className="fnav-link__active-dot"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
               </Link>
             )}
+
+            {/* Desktop More dropdown */}
             <div
               ref={moreRef}
-              className={`nav__more${moreIsActive ? ' nav__more--active' : ''}${moreOpen ? ' nav__more--open' : ''}`}
+              className={`fnav-more ${moreIsActive ? 'fnav-more--active' : ''}`}
               onMouseEnter={openMore}
               onMouseLeave={scheduleMoreClose}
             >
               <button
                 type="button"
-                className="nav__more-trigger"
+                className={`fnav-link fnav-more__trigger ${moreOpen || moreIsActive ? 'fnav-link--active' : ''}`}
                 aria-haspopup="true"
                 aria-expanded={moreOpen}
-                aria-controls="more-menu"
-                onClick={() => {
-                  if (moreOpen) closeMore();
-                  else {
-                    openMore();
-                    scheduleMoreClose();
-                  }
-                }}
+                aria-controls="fnav-more-menu"
+                onMouseEnter={() => setHoveredLink('more')}
+                onClick={() => (moreOpen ? closeMore() : (openMore(), scheduleMoreClose()))}
                 onFocus={openMore}
               >
-                More <span className="nav__more-chevron" aria-hidden>⌄</span>
+                {hoveredLink === 'more' && (
+                  <motion.div
+                    layoutId="nav-hover-pill"
+                    className="fnav-link__hover-pill"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="fnav-link__text">
+                  More
+                  <motion.span
+                    className="fnav-more__chevron"
+                    animate={{ rotate: moreOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    aria-hidden
+                  >
+                    ⌄
+                  </motion.span>
+                </span>
               </button>
-              {moreOpen && (
-                <div id="more-menu" className="nav__more-menu" role="menu" aria-label="More pages">
+
+              <AnimatePresence>
+                {moreOpen && (
+                  <motion.div
+                    id="fnav-more-menu"
+                    className="fnav-more__menu"
+                    role="menu"
+                    aria-label="Practice pages"
+                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="fnav-more__header">PRACTICE & CLINICAL</div>
+                    {practiceNav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        role="menuitem"
+                        className={`fnav-more__item ${isActive(item.href) ? 'fnav-more__item--active' : ''}`}
+                        onClick={closeMore}
+                      >
+                        <span>{item.label}</span>
+                        <ArrowRight size={13} className="fnav-more__item-arrow" />
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Desktop Right Actions */}
+          <div className="fnav-actions">
+            <PaletteMenu />
+            <Link
+              href="/books"
+              className="btn btn--primary btn--sm fnav-cta"
+            >
+              <Book size={14} className="fnav-cta__icon" />
+              <span>Get the Book</span>
+              <ArrowRight size={13} className="fnav-cta__arrow" />
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            type="button"
+            className="fnav-mobile-toggle"
+            aria-expanded={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <Close size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div
+              className="fnav-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div
+              className="fnav-drawer"
+              initial={{ opacity: 0, y: -16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="fnav-drawer__head">
+                <span className="fnav-drawer__brand">Dr. Fran Gaik</span>
+                <button
+                  type="button"
+                  className="icon-btn icon-btn--sm"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <Close size={16} />
+                </button>
+              </div>
+
+              {/* Primary Links */}
+              <div className="fnav-drawer__section">
+                <span className="fnav-drawer__section-title">Navigation</span>
+                <div className="fnav-drawer__links">
+                  {allLinks.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`fnav-drawer__link ${isActive(item.href) ? 'fnav-drawer__link--active' : ''}`}
+                    >
+                      <span>{item.label}</span>
+                      <ArrowRight size={16} className="fnav-drawer__arrow" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Practice Submenu */}
+              <div className="fnav-drawer__section">
+                <span className="fnav-drawer__section-title">Practice & Resources</span>
+                <div className="fnav-drawer__links">
                   {practiceNav.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      role="menuitem"
-                      className="nav__more-link"
-                      onClick={closeMore}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`fnav-drawer__link fnav-drawer__link--sub ${isActive(item.href) ? 'fnav-drawer__link--active' : ''}`}
                     >
-                      {item.label}
+                      <span>{item.label}</span>
+                      <ArrowRight size={14} className="fnav-drawer__arrow" />
                     </Link>
                   ))}
                 </div>
-              )}
-            </div>
-          </nav>
+              </div>
 
-          <div className="header__actions">
-            <ThemeDropdown />
-            <ModeToggle />
-            <Link href="/books" className="btn btn--primary btn--sm header__cta">
-              Get the Book
-            </Link>
-            <button
-              type="button"
-              className="icon-btn burger"
-              aria-label="Open menu"
-              aria-expanded={open}
-              onClick={() => setOpen(true)}
-            >
-              <Menu />
-            </button>
-          </div>
-        </div>
-      </header>
+              {/* Color Theme Selector in Drawer */}
+              <div className="fnav-drawer__section">
+                <PaletteSwatches />
+              </div>
 
-      {open && (
-        <div className="mobile-nav" role="dialog" aria-modal="true" aria-label="Site menu">
-          <div className="mobile-nav__head">
-            <div className="mobile-nav__brand">
-              <Image src="/brand/logo-amber.png" alt="" width={180} height={43} className="brand__logo" />
-            </div>
-            <button type="button" className="icon-btn" aria-label="Close menu" onClick={() => setOpen(false)}>
-              <Close />
-            </button>
-          </div>
-          <nav className="mobile-nav__links" aria-label="Mobile">
-            {nav.map((item) => (
-              <Link key={item.href} href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-                {item.label}
-              </Link>
-            ))}
-            <span className="mobile-nav__label">More</span>
-            {practiceNav.map((item) => (
-              <Link key={item.href} href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="mobile-nav__foot">
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <ThemeDropdown />
-              <ModeToggle />
-              <span className="muted" style={{ fontSize: 13 }}>Themes &amp; light/dark</span>
-            </div>
-            <Link href="/books" className="btn btn--primary">Get the Book</Link>
-          </div>
-        </div>
-      )}
-    </>
+              {/* Mobile CTA */}
+              <div className="fnav-drawer__footer">
+                <Link
+                  href="/books"
+                  className="btn btn--primary fnav-drawer__cta"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Book size={16} />
+                  <span>Get the Book</span>
+                  <ArrowRight size={15} />
+                </Link>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </header>
   );
 }

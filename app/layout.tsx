@@ -6,6 +6,8 @@ import { SplashGate } from '@/components/SignatureSplash';
 import AmbientBackground from '@/components/AmbientBackground';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import MobileNav from '@/components/MobileNav';
+import BackToTop from '@/components/BackToTop';
 import CursorLeaves from '@/components/CursorLeaves';
 import RouteWarmup from '@/components/RouteWarmup';
 import {
@@ -109,13 +111,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  // The theme toggle is per-visitor, so the browser chrome is tinted by the
-  // visitor's own colour-scheme preference rather than the site's default.
-  colorScheme: 'dark light',
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#081B1B' },
-    { media: '(prefers-color-scheme: light)', color: '#F2F8F6' },
-  ],
+  // One mode, always dark: this tints the browser chrome on the site's own
+  // background and tells the OS to render form controls and scrollbars to
+  // match, rather than following the visitor's system preference.
+  colorScheme: 'dark',
+  themeColor: '#081B1B',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -148,6 +148,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteHeader />
             <main id="main">{children}</main>
             <SiteFooter />
+            <BackToTop />
+            <MobileNav />
             <CursorLeaves />
             <RouteWarmup />
           </SplashGate>

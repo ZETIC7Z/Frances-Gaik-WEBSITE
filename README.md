@@ -2,8 +2,9 @@
 
 An ultra-modern, dark-luxury portfolio and practice site for **Dr. Frances Gaik, PsyD, LCPC** —
 author of *Managing Depression with Qigong*. Built with Next.js 15 (App Router), React 19,
-TypeScript, and a custom CSS design system with a 10-palette theme engine, a looping
-background film, an animated signature intro, and an interactive book showcase.
+TypeScript, and a custom CSS design system with a 13-palette theme engine (dark in every
+palette), a looping background film, an animated signature intro, and an interactive book
+showcase.
 
 **Live site → [lifecoachdoc.vercel.app](https://lifecoachdoc.vercel.app)**
 
@@ -113,25 +114,49 @@ come back as an image type. Screenshots land in `.freebuff/production/`.
 
 ## Theme system
 
-Ten professional palettes × dark/light modes (20 token sets), defined in
-`config/themes.ts`:
+Thirteen professional palettes, all dark — the site has one mode, so a palette is the whole
+choice. Defined in `config/themes.ts`:
 
-**Teal Ember** *(default, brand)* · Cobalt Aurora · Ocean Mist · Plum Radiance ·
-Forest Copper · Graphite Rose · Solar Slate · Glacier Steel · Indigo Mineral · Sandstone Ink
+**Teal Ember** *(default, brand)* · **Graphite Rose** · Scarlet Noir · Inferno Ember ·
+Bumblebee Noir · Solar Slate · Forest Copper · Cobalt Aurora · Ocean Mist · Plum Radiance ·
+Glacier Steel · Indigo Mineral · Sandstone Ink
 
-- Header **palette button** opens the picker (three-swatch preview per theme).
-- Header **sun/moon button** toggles light/dark within the active palette.
-- Selection persists in `localStorage` (`fg-theme`, `fg-mode`); first visit follows the OS.
+- The picker lives in the **footer** (one swatch per palette); the header keeps a single
+  call to action, so there is no mode switch to make and nothing to explain.
+- Selection persists in `localStorage` (`fg-theme`).
 - Tokens are written as CSS custom properties on `<html>`, so backgrounds, glows, cards,
   buttons, particles, and the 3D book all recolor automatically.
-- `:root` in `app/globals.css` mirrors the default (Teal Ember dark) so server-rendered
-  HTML paints correctly before hydration.
+- Two per-palette numbers keep every palette as clean as the default over the film:
+  `ambientGlow` proportions the palette-tinted light so pale accents cannot fog the
+  backdrop, and `filmVeil` settles the clip into the palette's own darkness (a scarlet or
+  fire palette over green water otherwise reads as two unrelated pictures).
+- `:root` in `app/globals.css` mirrors the default (Teal Ember) so server-rendered HTML
+  paints correctly before hydration.
 
 ### Customizing
 
 - **Add a palette:** append a `ThemeDefinition` to `themes` in `config/themes.ts`.
-- **Change default:** edit `defaultThemeId` / `defaultMode` in the same file and mirror
-  the values in `:root` of `globals.css`.
+- **Change default:** edit `defaultThemeId` in the same file and mirror the values in
+  `:root` of `globals.css`.
+
+---
+
+## Shell
+
+- **Header:** the author mark, the primary nav (desktop), and one call to action — *Get the
+  Book* — at every width. Nothing else competes with it.
+- **Phone navigation** (`components/MobileNav.tsx`): a floating pill that hovers over the
+  page and **slides off the bottom of the screen while the visitor reads downward**, coming
+  straight back on any scroll up — so it is present when a thumb reaches for it and never
+  covers the line being read. *More* raises a sheet out of the pill rather than dropping
+  from the top of the screen.
+- **Back to top** (`components/BackToTop.tsx`): a pill that appears once the visitor is past
+  the fold, sits above the phone nav, and returns them to the hero in one tap.
+- **Store buttons:** every shop a book can be bought from is offered as its own official
+  logo on a **white plate and nothing else** — no written name, no edition note. The
+  artwork (`public/stores/`) is flattened onto white, because these logos are drawn in dark
+  ink for a light ground. Shops are matched to logos by the **hostname of the link**, which
+  is what a visitor actually clicks.
 
 ---
 
@@ -171,10 +196,9 @@ The script (source of truth for the asset) trims the clip, cross-fades the last 
 into the first so the loop has no hard cut, strips audio, and writes both files.
 
 The film sits at the **base of the ambient stack**: the aurora glow, wash, orbs, mist,
-leaves, stars and meteors all still paint above it, the theme's own palette tints it
-(`mix-blend-mode: soft-light` over a palette wash, desaturated and blurred so body text
-stays legible), and it keeps the same pointer-driven 3D parallax translate the drawn
-scene had. In light modes it drops to a 12% ghost so paper stays paper.
+leaves, stars and meteors all still paint above it, the palette's own veil tints it
+(see `filmVeil` above), and it keeps the same pointer-driven 3D parallax translate the drawn
+scene had.
 
 - It is **not on the critical path**: it hydrates no slower with it blocked than with it
   served.
@@ -242,8 +266,10 @@ prefers reduced motion — preserving battery and avoiding layout shift.
 - Semantic landmarks (`header`, `main`, `footer`, `nav`), single `h1` per page
 - Keyboard: visible focus rings, Escape closes dialogs/menus, focus moves into the book dialog
 - `aria-current` navigation state, `aria-modal` dialogs, labelled icon buttons
+- The phone navigation floats as a pill and slides away while reading downward, so it never
+  covers the line being read; store buttons are labelled links whose logo carries alt text
 - `prefers-reduced-motion` disables gradients sweeps, ambient motion, splash, tilt, and counters
-- Color tokens are hand-tuned for contrast in both modes of every palette
+- Color tokens are hand-tuned for contrast in every palette
 
 ## Performance notes
 

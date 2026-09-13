@@ -3,6 +3,8 @@ import { about, site } from '@/config/siteData';
 import { Reveal } from '@/components/ui/Reveal';
 import { pageMetadata } from '@/config/seo';
 
+export const dynamic = 'force-static';
+
 export const metadata = pageMetadata({
   title: 'About the Author',
   description:

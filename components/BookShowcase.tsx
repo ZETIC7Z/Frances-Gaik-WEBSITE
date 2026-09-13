@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { books, reviewsForBook } from '@/config/siteData';
 import type { Book } from '@/config/siteData';
+import { storeLogoFor } from '@/config/storeLogos';
 import { ArrowRight, Close } from './ui/icons';
 import ReviewWall from './ReviewWall';
 
@@ -15,6 +16,93 @@ function RatingLabel({ rating, stars }: { rating?: string; stars?: number }) {
       {typeof stars === 'number' && <i aria-hidden>{'★'.repeat(stars)}{'☆'.repeat(Math.max(0, 5 - stars))}</i>}
       <small>{rating}</small>
     </span>
+  );
+}
+
+/**
+ * The shops a book can be bought from, as each shop's own logo and nothing
+ * else — no written name, no edition note. Every button is a plain white plate
+ * so the artwork (dark ink, drawn on light ground) is legible on the dark site.
+ * A shop we hold no artwork for shows its name instead of an unrelated mark.
+ */
+function StoreButtons({ book, variant = 'grid' }: { book: Book; variant?: 'grid' | 'row' }) {
+  return (
+    <div className={variant === 'row' ? 'store-row' : 'store-grid'}>
+      {book.stores.map((s) => {
+        const logo = storeLogoFor(s.label, s.href);
+        const label = `Buy ${book.title} from ${s.label}${s.note ? ` (${s.note})` : ''}`;
+        return (
+          <a
+            key={`${s.href}-${s.label}`}
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`store-btn${variant === 'row' ? ' store-btn--row' : ''}`}
+            aria-label={label}
+            title={label}
+          >
+            {logo ? (
+              /* A fixed stage behind every logo. The artwork is already
+                 trimmed and scaled to one content height by the build script,
+                 so `height: 100%` here makes every shop's logo the same size,
+                 and `object-fit: contain` lets a wide lockup use the plate's
+                 full width without ever being squashed. */
+              <span className="store-btn__stage">
+                <Image
+                  src={logo.src}
+                  alt={logo.name}
+                  width={logo.width}
+                  height={logo.height}
+                  unoptimized
+                  className="store-btn__logo"
+                />
+              </span>
+            ) : (
+              <span className="store-btn__stage">
+                <span className="store-btn__name">{s.label}</span>
+              </span>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * The long description. On a phone it is cut to a few lines — a screen of
+ * unbroken paragraphs is the fastest way to lose a reader who is deciding
+ * whether to buy — with the rest one tap away. The desktop dialog shows it
+ * whole, where there is room for it.
+ */
+function Blurb({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const update = () => setIsPhone(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  const clamped = isPhone && !expanded;
+
+  return (
+    <div className="blurb">
+      <p className={`blurb__text${clamped ? ' blurb__text--clamped' : ''}`}>{text}</p>
+      {isPhone && (
+        <button
+          type="button"
+          className="blurb__toggle"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? 'Show less' : 'Show more'}
+        </button>
+      )}
+    </div>
   );
 }
 /* ------------------------------------------------------------------ */
@@ -65,12 +153,6 @@ function BookModal({ book, onClose }: { book: Book; onClose: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 90,
-        background: 'rgba(4,10,10,0.74)', backdropFilter: 'blur(12px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 20,
-      }}
     >
       <motion.div
         role="dialog"
@@ -81,16 +163,9 @@ function BookModal({ book, onClose }: { book: Book; onClose: () => void }) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.98 }}
         transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-        className="glass"
-        style={{
-          width: 'min(960px, 100%)',
-          maxHeight: 'min(88vh, 820px)',
-          overflow: 'auto',
-          padding: 'clamp(22px, 3vw, 36px)',
-          borderColor: 'var(--border-strong)',
-        }}
+        className="glass modal-panel"
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+        <div className="modal-panel__top">
           <div>
             <RatingLabel rating={book.rating} stars={book.ratingStars} />
             <h2 style={{ marginTop: 8, marginBottom: 4 }}>{book.title}</h2>
@@ -101,16 +176,20 @@ function BookModal({ book, onClose }: { book: Book; onClose: () => void }) {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(150px, 220px) 1fr', gap: 26, marginTop: 22 }} className="modal-grid">
-          <Image
-            src={book.cover}
-            alt={`${book.title} cover`}
-            width={400}
-            height={600}
-            unoptimized={book.cover.startsWith('http')}
-            style={{ width: '100%', height: 'auto', borderRadius: 10, border: '1px solid var(--border-strong)' }}
-          />
-          <div>
+        {/* Cover first, copy beneath it: on a phone the two-column version
+            squeezed the description into a strip a few words wide. */}
+        <div className="modal-grid">
+          <div className="modal-grid__cover">
+            <Image
+              src={book.cover}
+              alt={`${book.title} cover`}
+              width={400}
+              height={600}
+              loading="lazy"
+              unoptimized={book.cover.startsWith('http')}
+            />
+          </div>
+          <div className="modal-grid__copy">
             <div className="bshow__meta">
               <span className="badge">{book.publisher}</span>
               <span className="badge">{book.year}</span>
@@ -118,36 +197,24 @@ function BookModal({ book, onClose }: { book: Book; onClose: () => void }) {
               {book.isbn && <span className="badge">ISBN {book.isbn}</span>}
               <span className="badge">{book.price}</span>
             </div>
-            <p style={{ fontSize: 14.5 }}>{book.blurb}</p>
+
+            <Blurb text={book.blurb} />
 
             <h3 style={{ fontSize: 16, margin: '18px 0 8px' }}>Inside the book</h3>
-            <ul style={{ paddingLeft: 18, color: 'var(--fg-soft)', fontSize: 14 }}>
+            <ul className="modal-list">
               {book.sample.map((s) => (
-                <li key={s.slice(0, 32)} style={{ marginBottom: 6 }}>{s}</li>
+                <li key={s.slice(0, 32)}>{s}</li>
               ))}
             </ul>
           </div>
         </div>
 
-        <h3 style={{ marginTop: 28, fontSize: 18 }}>Reviews &amp; commentary</h3>
+        <h3 style={{ marginTop: 26, fontSize: 18 }}>Available from these stores</h3>
+        <StoreButtons book={book} />
+
+        <h3 style={{ marginTop: 26, fontSize: 18 }}>Reviews &amp; commentary</h3>
         <div style={{ marginTop: 14 }}>
           <ReviewWall reviews={reviewsForBook(book.id)} size="small" />
-        </div>
-
-        <h3 style={{ marginTop: 28, fontSize: 18 }}>Available from these stores</h3>
-        <div className="store-grid">
-          {book.stores.map((s) => (
-            <a
-              key={`${s.href}-${s.label}`}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="store-chip"
-            >
-              <span>{s.label}</span>
-              {s.note && <small>{s.note}</small>}
-            </a>
-          ))}
         </div>
       </motion.div>
     </motion.div>
@@ -204,18 +271,24 @@ export default function BookShowcase() {
               <span className="badge">{book.price}</span>
             </div>
 
-            <p style={{ fontSize: 14.5, maxWidth: 640 }}>{book.blurb.slice(0, 260)}…</p>
+            {/* On a phone the blurb is cut to three lines here; the full text
+                lives one tap away in the dialog. */}
+            <p className="bshow__blurb">{book.blurb}</p>
 
             <div className="bshow__controls">
               <button type="button" className="btn btn--primary" onClick={() => setOpenId(book.id)}>
                 Look inside <ArrowRight size={16} />
               </button>
-              <a href={book.stores[0].href} target="_blank" rel="noopener noreferrer" className="btn btn--outline">
-                Buy from {book.stores[0].label}
-              </a>
               <button type="button" className="icon-btn" onClick={() => go(-1)} aria-label="Previous book">←</button>
               <button type="button" className="icon-btn" onClick={() => go(1)} aria-label="Next book">→</button>
               <Dots count={books.length} active={index} onSelect={setIndex} />
+            </div>
+
+            {/* Where to buy, as the shops' own logos rather than a written
+                list — reachable without opening the dialog on any screen. */}
+            <div className="bshow__stores">
+              <span className="bshow__stores-label">Buy from</span>
+              <StoreButtons book={book} variant="row" />
             </div>
           </div>
         </div>
@@ -232,7 +305,7 @@ export default function BookShowcase() {
             aria-label={`Show ${b.title}`}
             aria-pressed={i === index}
           >
-            <Image src={b.cover} alt="" width={96} height={144} unoptimized={b.cover.startsWith('http')} style={{ width: '100%', height: 'auto' }} />
+            <Image src={b.cover} alt="" width={96} height={144} loading="lazy" unoptimized={b.cover.startsWith('http')} style={{ width: '100%', height: 'auto' }} />
           </button>
         ))}
       </div>

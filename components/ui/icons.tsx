@@ -96,6 +96,32 @@ export const Sparkle = ({ size, className }: P) => (
   </svg>
 );
 
+export const Home = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-8.5Z" />
+    <path d="M9.6 20.5v-6h4.8v6" />
+  </svg>
+);
+
+export const User = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <circle cx="12" cy="8.4" r="3.6" />
+    <path d="M4.8 20.2a7.4 7.4 0 0 1 14.4 0" />
+  </svg>
+);
+
+export const ChevronUp = ({ size, className }: P) => (
+  <svg {...base(size)} className={className} strokeWidth={2.2}>
+    <path d="m6 14.5 6-6 6 6" />
+  </svg>
+);
+
+export const Dots = ({ size, className }: P) => (
+  <svg {...base(size)} className={className} strokeWidth={2.6}>
+    <path d="M5 12h.01M12 12h.01M19 12h.01" />
+  </svg>
+);
+
 export const Shield = ({ size, className }: P) => (
   <svg {...base(size)} className={className}>
     <path d="M12 3 5 6v5.5c0 4.6 3 7.9 7 9.5 4-1.6 7-4.9 7-9.5V6l-7-3Z" />

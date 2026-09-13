@@ -1,12 +1,12 @@
 /**
  * PROFESSIONAL THEME CATALOG
  * ---------------------------------------------------------------------------
- * Ten curated color families, each with a dark and light mode (20 token sets).
- * Default: Teal Ember (the author brand palette), dark mode.
+ * Thirteen curated color families. Every palette is a dark palette — the site
+ * has a single mode, so a palette is the whole choice: pick one and the page
+ * (text, glass, buttons, particles, 3D book, ambient light) recolours together.
+ * Default: Teal Ember (the author brand palette).
  * Names describe the color combination — no entertainment-brand references.
  */
-
-export type Mode = 'dark' | 'light';
 
 export type ThemeTokens = {
   bg: string;
@@ -31,15 +31,43 @@ export type ThemeDefinition = {
   id: string;
   name: string;
   swatch: [string, string, string];
-  dark: ThemeTokens;
-  light: ThemeTokens;
+  tokens: ThemeTokens;
+  /**
+   * How strongly this palette's accents are allowed to glow *over the ambient
+   * film*, as a multiplier on the aurora lobes, the drifting orbs and the wash.
+   *
+   * The film is a photograph, and the layers above it are light in the
+   * palette's own colors. A palette whose accents sit in the scene's own hue
+   * range (Teal Ember: teal and ember over green-brown water) can carry the
+   * full amount — the light reads as part of the picture. A palette whose
+   * accents are pale or cool (Glacier Steel, Sandstone Ink, Plum Radiance)
+   * stacks light that the photograph cannot absorb, and the backdrop turns to
+   * fog: contrast drops, the scene disappears, and body copy loses its
+   * separation. Those palettes get proportioned down so the film stays a clean,
+   * legible backdrop and the palette still reads in the accents — headings,
+   * rules, buttons, particles — where it is supposed to.
+   *
+   * 1 = full strength. Teal Ember is the reference and is never reduced.
+   */
+  ambientGlow: number;
+  /**
+   * How much of the palette's base color is laid over the film, as a
+   * percentage. The clip is a green-brown water scene: it harmonises with the
+   * teal and forest families as-is, but a scarlet or fire palette sitting on
+   * green water reads as two unrelated pictures. Raising the veil settles the
+   * scene into that palette's own darkness so the accents look like light
+   * *inside* the image instead of paint on top of it. The default is 5.
+   */
+  filmVeil?: number;
 };
 
 const tealEmber: ThemeDefinition = {
   id: 'teal-ember',
   name: 'Teal Ember',
   swatch: ['#081B1B', '#00A896', '#F5A623'],
-  dark: {
+  ambientGlow: 1,
+  filmVeil: 5,
+  tokens: {
     bg: '#081B1B',
     bgSoft: '#0C0E10',
     surface: '#0C2423',
@@ -57,199 +85,15 @@ const tealEmber: ThemeDefinition = {
     onPrimary: '#03211E',
     onSecondary: '#231602',
   },
-  light: {
-    bg: '#F2F8F6',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(8,27,27,0.03)',
-    border: 'rgba(8,27,27,0.10)',
-    borderStrong: 'rgba(0,127,115,0.30)',
-    fg: '#12302D',
-    fgSoft: '#2C4B47',
-    fgMuted: '#526A66',
-    primary: '#007F73',
-    primarySoft: 'rgba(0,127,115,0.10)',
-    primaryGlow: 'rgba(0,127,115,0.25)',
-    secondary: '#B87500',
-    secondaryGlow: 'rgba(184,117,0,0.25)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
-};
-
-const cobaltAurora: ThemeDefinition = {
-  id: 'cobalt-aurora',
-  name: 'Cobalt Aurora',
-  swatch: ['#0A1128', '#3E6FF4', '#9D6BFF'],
-  dark: {
-    bg: '#0A1128',
-    bgSoft: '#0B0E1A',
-    surface: '#111A3C',
-    surfaceSoft: 'rgba(255,255,255,0.03)',
-    border: 'rgba(255,255,255,0.10)',
-    borderStrong: 'rgba(62,111,244,0.40)',
-    fg: '#EAF0FF',
-    fgSoft: '#C9D6F5',
-    fgMuted: '#8FA0C9',
-    primary: '#3E6FF4',
-    primarySoft: 'rgba(62,111,244,0.12)',
-    primaryGlow: 'rgba(62,111,244,0.45)',
-    secondary: '#9D6BFF',
-    secondaryGlow: 'rgba(157,107,255,0.45)',
-    onPrimary: '#060D2E',
-    onSecondary: '#0D0630',
-  },
-  light: {
-    bg: '#F1F5FE',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(10,17,40,0.03)',
-    border: 'rgba(10,17,40,0.10)',
-    borderStrong: 'rgba(45,90,220,0.30)',
-    fg: '#111A3C',
-    fgSoft: '#28345C',
-    fgMuted: '#4C5B85',
-    primary: '#2D5ADC',
-    primarySoft: 'rgba(45,90,220,0.10)',
-    primaryGlow: 'rgba(45,90,220,0.22)',
-    secondary: '#6E3FD1',
-    secondaryGlow: 'rgba(110,63,209,0.22)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
-};
-
-const oceanMist: ThemeDefinition = {
-  id: 'ocean-mist',
-  name: 'Ocean Mist',
-  swatch: ['#06212E', '#19B8C4', '#BEE9EF'],
-  dark: {
-    bg: '#06212E',
-    bgSoft: '#081018',
-    surface: '#0B3140',
-    surfaceSoft: 'rgba(255,255,255,0.03)',
-    border: 'rgba(255,255,255,0.10)',
-    borderStrong: 'rgba(25,184,196,0.40)',
-    fg: '#EAF7F9',
-    fgSoft: '#C4E2E8',
-    fgMuted: '#8FB4BC',
-    primary: '#19B8C4',
-    primarySoft: 'rgba(25,184,196,0.12)',
-    primaryGlow: 'rgba(25,184,196,0.45)',
-    secondary: '#8FD8E8',
-    secondaryGlow: 'rgba(143,216,232,0.40)',
-    onPrimary: '#02262C',
-    onSecondary: '#04262C',
-  },
-  light: {
-    bg: '#EFF8FA',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(6,33,46,0.03)',
-    border: 'rgba(6,33,46,0.10)',
-    borderStrong: 'rgba(9,140,152,0.30)',
-    fg: '#0B3140',
-    fgSoft: '#234B59',
-    fgMuted: '#47707C',
-    primary: '#0A8E9B',
-    primarySoft: 'rgba(10,142,155,0.10)',
-    primaryGlow: 'rgba(10,142,155,0.22)',
-    secondary: '#2C7A8C',
-    secondaryGlow: 'rgba(44,122,140,0.22)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
-};
-
-const plumRadiance: ThemeDefinition = {
-  id: 'plum-radiance',
-  name: 'Plum Radiance',
-  swatch: ['#1B0E26', '#B86EE8', '#F49AC8'],
-  dark: {
-    bg: '#1B0E26',
-    bgSoft: '#100816',
-    surface: '#2A1740',
-    surfaceSoft: 'rgba(255,255,255,0.03)',
-    border: 'rgba(255,255,255,0.10)',
-    borderStrong: 'rgba(184,110,232,0.40)',
-    fg: '#F8EFFD',
-    fgSoft: '#E2CFEE',
-    fgMuted: '#B39CC4',
-    primary: '#B86EE8',
-    primarySoft: 'rgba(184,110,232,0.12)',
-    primaryGlow: 'rgba(184,110,232,0.45)',
-    secondary: '#F49AC8',
-    secondaryGlow: 'rgba(244,154,200,0.40)',
-    onPrimary: '#1B0A2B',
-    onSecondary: '#2E0F20',
-  },
-  light: {
-    bg: '#FAF3FC',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(27,14,38,0.03)',
-    border: 'rgba(27,14,38,0.10)',
-    borderStrong: 'rgba(130,60,180,0.28)',
-    fg: '#2A1740',
-    fgSoft: '#452E5C',
-    fgMuted: '#6B5680',
-    primary: '#8A3FC4',
-    primarySoft: 'rgba(138,63,196,0.10)',
-    primaryGlow: 'rgba(138,63,196,0.20)',
-    secondary: '#C2508A',
-    secondaryGlow: 'rgba(194,80,138,0.20)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
-};
-
-const forestCopper: ThemeDefinition = {
-  id: 'forest-copper',
-  name: 'Forest Copper',
-  swatch: ['#0D1F14', '#2FA36B', '#C97E3D'],
-  dark: {
-    bg: '#0D1F14',
-    bgSoft: '#0A1210',
-    surface: '#153425',
-    surfaceSoft: 'rgba(255,255,255,0.03)',
-    border: 'rgba(255,255,255,0.10)',
-    borderStrong: 'rgba(47,163,107,0.40)',
-    fg: '#EFF8F1',
-    fgSoft: '#CFE4D5',
-    fgMuted: '#9BB6A3',
-    primary: '#2FA36B',
-    primarySoft: 'rgba(47,163,107,0.12)',
-    primaryGlow: 'rgba(47,163,107,0.45)',
-    secondary: '#C97E3D',
-    secondaryGlow: 'rgba(201,126,61,0.45)',
-    onPrimary: '#04220F',
-    onSecondary: '#251203',
-  },
-  light: {
-    bg: '#F1F8F2',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(13,31,20,0.03)',
-    border: 'rgba(13,31,20,0.10)',
-    borderStrong: 'rgba(28,120,75,0.28)',
-    fg: '#153425',
-    fgSoft: '#2C4F3B',
-    fgMuted: '#4F7360',
-    primary: '#1F7F52',
-    primarySoft: 'rgba(31,127,82,0.10)',
-    primaryGlow: 'rgba(31,127,82,0.20)',
-    secondary: '#A85F22',
-    secondaryGlow: 'rgba(168,95,34,0.20)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
 };
 
 const graphiteRose: ThemeDefinition = {
   id: 'graphite-rose',
   name: 'Graphite Rose',
   swatch: ['#16161A', '#E56B8C', '#F4B8C8'],
-  dark: {
+  ambientGlow: 0.55,
+  filmVeil: 9,
+  tokens: {
     bg: '#16161A',
     bgSoft: '#0D0D10',
     surface: '#22222A',
@@ -267,23 +111,194 @@ const graphiteRose: ThemeDefinition = {
     onPrimary: '#2E0A15',
     onSecondary: '#331018',
   },
-  light: {
-    bg: '#FAF4F6',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(22,22,26,0.03)',
-    border: 'rgba(22,22,26,0.10)',
-    borderStrong: 'rgba(190,80,110,0.28)',
-    fg: '#22222A',
-    fgSoft: '#453A40',
-    fgMuted: '#6E6168',
-    primary: '#C2486B',
-    primarySoft: 'rgba(194,72,107,0.10)',
-    primaryGlow: 'rgba(194,72,107,0.20)',
-    secondary: '#A85F76',
-    secondaryGlow: 'rgba(168,95,118,0.20)',
+};
+
+const scarletNoir: ThemeDefinition = {
+  id: 'scarlet-noir',
+  name: 'Scarlet Noir',
+  swatch: ['#0C0508', '#E50914', '#FF8A6B'],
+  // Pure saturated red over green water: the veil does most of the work, the
+  // glow stays moderate so the river's highlights do not turn pink.
+  ambientGlow: 0.72,
+  filmVeil: 20,
+  tokens: {
+    bg: '#0C0508',
+    bgSoft: '#070304',
+    surface: '#1B0A0E',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(229,9,20,0.42)',
+    fg: '#FBEDEE',
+    fgSoft: '#E7C9CC',
+    fgMuted: '#B08A8E',
+    primary: '#E50914',
+    primarySoft: 'rgba(229,9,20,0.14)',
+    primaryGlow: 'rgba(229,9,20,0.45)',
+    secondary: '#FF8A6B',
+    secondaryGlow: 'rgba(255,138,107,0.40)',
     onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
+    onSecondary: '#2B0A02',
+  },
+};
+
+const infernoEmber: ThemeDefinition = {
+  id: 'inferno-ember',
+  name: 'Inferno Ember',
+  swatch: ['#150605', '#FF4D1C', '#FFB03A'],
+  ambientGlow: 0.85,
+  filmVeil: 22,
+  tokens: {
+    bg: '#150605',
+    bgSoft: '#0C0303',
+    surface: '#26100C',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(255,77,28,0.42)',
+    fg: '#FCEFE6',
+    fgSoft: '#EFCDBA',
+    fgMuted: '#BD9179',
+    primary: '#FF4D1C',
+    primarySoft: 'rgba(255,77,28,0.14)',
+    primaryGlow: 'rgba(255,77,28,0.50)',
+    secondary: '#FFB03A',
+    secondaryGlow: 'rgba(255,176,58,0.45)',
+    onPrimary: '#2A0A00',
+    onSecondary: '#2E1A00',
+  },
+};
+
+const bumblebeeNoir: ThemeDefinition = {
+  id: 'bumblebee-noir',
+  name: 'Bumblebee Noir',
+  swatch: ['#0D0C07', '#F5C518', '#FFE873'],
+  // Gold on warm black: high contrast, but both stops are pale, so the glow is
+  // eased the way the other light-accent palettes are.
+  ambientGlow: 0.7,
+  filmVeil: 16,
+  tokens: {
+    bg: '#0D0C07',
+    bgSoft: '#080705',
+    surface: '#1B1810',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(245,197,24,0.42)',
+    fg: '#FBF7E8',
+    fgSoft: '#E5DCC0',
+    fgMuted: '#ABA188',
+    primary: '#F5C518',
+    primarySoft: 'rgba(245,197,24,0.14)',
+    primaryGlow: 'rgba(245,197,24,0.48)',
+    secondary: '#FFE873',
+    secondaryGlow: 'rgba(255,232,115,0.40)',
+    onPrimary: '#241D00',
+    onSecondary: '#2A2400',
+  },
+};
+
+const cobaltAurora: ThemeDefinition = {
+  id: 'cobalt-aurora',
+  name: 'Cobalt Aurora',
+  swatch: ['#0A1128', '#3E6FF4', '#9D6BFF'],
+  // Deep blue and violet over a green-brown scene flatten it fastest.
+  ambientGlow: 0.5,
+  filmVeil: 12,
+  tokens: {
+    bg: '#0A1128',
+    bgSoft: '#0B0E1A',
+    surface: '#111A3C',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(62,111,244,0.40)',
+    fg: '#EAF0FF',
+    fgSoft: '#C9D6F5',
+    fgMuted: '#8FA0C9',
+    primary: '#3E6FF4',
+    primarySoft: 'rgba(62,111,244,0.12)',
+    primaryGlow: 'rgba(62,111,244,0.45)',
+    secondary: '#9D6BFF',
+    secondaryGlow: 'rgba(157,107,255,0.45)',
+    onPrimary: '#060D2E',
+    onSecondary: '#0D0630',
+  },
+};
+
+const oceanMist: ThemeDefinition = {
+  id: 'ocean-mist',
+  name: 'Ocean Mist',
+  swatch: ['#06212E', '#19B8C4', '#BEE9EF'],
+  // The secondary is near-white: at full strength it veils the scene.
+  ambientGlow: 0.55,
+  filmVeil: 7,
+  tokens: {
+    bg: '#06212E',
+    bgSoft: '#081018',
+    surface: '#0B3140',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(25,184,196,0.40)',
+    fg: '#EAF7F9',
+    fgSoft: '#C4E2E8',
+    fgMuted: '#8FB4BC',
+    primary: '#19B8C4',
+    primarySoft: 'rgba(25,184,196,0.12)',
+    primaryGlow: 'rgba(25,184,196,0.45)',
+    secondary: '#8FD8E8',
+    secondaryGlow: 'rgba(143,216,232,0.40)',
+    onPrimary: '#02262C',
+    onSecondary: '#04262C',
+  },
+};
+
+const plumRadiance: ThemeDefinition = {
+  id: 'plum-radiance',
+  name: 'Plum Radiance',
+  swatch: ['#1B0E26', '#B86EE8', '#F49AC8'],
+  ambientGlow: 0.55,
+  filmVeil: 13,
+  tokens: {
+    bg: '#1B0E26',
+    bgSoft: '#100816',
+    surface: '#2A1740',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(184,110,232,0.40)',
+    fg: '#F8EFFD',
+    fgSoft: '#E2CFEE',
+    fgMuted: '#B39CC4',
+    primary: '#B86EE8',
+    primarySoft: 'rgba(184,110,232,0.12)',
+    primaryGlow: 'rgba(184,110,232,0.45)',
+    secondary: '#F49AC8',
+    secondaryGlow: 'rgba(244,154,200,0.40)',
+    onPrimary: '#1B0A2B',
+    onSecondary: '#2E0F20',
+  },
+};
+
+const forestCopper: ThemeDefinition = {
+  id: 'forest-copper',
+  name: 'Forest Copper',
+  swatch: ['#0D1F14', '#2FA36B', '#C97E3D'],
+  // Green and copper are the film's own family, so this one barely needs easing.
+  ambientGlow: 0.85,
+  filmVeil: 6,
+  tokens: {
+    bg: '#0D1F14',
+    bgSoft: '#0A1210',
+    surface: '#153425',
+    surfaceSoft: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.10)',
+    borderStrong: 'rgba(47,163,107,0.40)',
+    fg: '#EFF8F1',
+    fgSoft: '#CFE4D5',
+    fgMuted: '#9BB6A3',
+    primary: '#2FA36B',
+    primarySoft: 'rgba(47,163,107,0.12)',
+    primaryGlow: 'rgba(47,163,107,0.45)',
+    secondary: '#C97E3D',
+    secondaryGlow: 'rgba(201,126,61,0.45)',
+    onPrimary: '#04220F',
+    onSecondary: '#251203',
   },
 };
 
@@ -291,7 +306,9 @@ const solarSlate: ThemeDefinition = {
   id: 'solar-slate',
   name: 'Solar Slate',
   swatch: ['#20242C', '#F0A63C', '#FFE08A'],
-  dark: {
+  ambientGlow: 0.85,
+  filmVeil: 10,
+  tokens: {
     bg: '#20242C',
     bgSoft: '#12151A',
     surface: '#2B3140',
@@ -309,31 +326,16 @@ const solarSlate: ThemeDefinition = {
     onPrimary: '#2E1D03',
     onSecondary: '#33260A',
   },
-  light: {
-    bg: '#FAF7F0',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(32,36,44,0.03)',
-    border: 'rgba(32,36,44,0.10)',
-    borderStrong: 'rgba(190,130,40,0.28)',
-    fg: '#2B3140',
-    fgSoft: '#4A505C',
-    fgMuted: '#6E7480',
-    primary: '#B87A1E',
-    primarySoft: 'rgba(184,122,30,0.10)',
-    primaryGlow: 'rgba(184,122,30,0.20)',
-    secondary: '#94682A',
-    secondaryGlow: 'rgba(148,104,42,0.20)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
 };
 
 const glacierSteel: ThemeDefinition = {
   id: 'glacier-steel',
   name: 'Glacier Steel',
   swatch: ['#101826', '#6FA8DC', '#DCEBF7'],
-  dark: {
+  // Both accents are pale and cool: the most fog-prone pair in the catalog.
+  ambientGlow: 0.5,
+  filmVeil: 12,
+  tokens: {
     bg: '#101826',
     bgSoft: '#0A0F18',
     surface: '#1A2740',
@@ -351,31 +353,15 @@ const glacierSteel: ThemeDefinition = {
     onPrimary: '#0B1B2E',
     onSecondary: '#12222F',
   },
-  light: {
-    bg: '#F2F7FB',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(16,24,38,0.03)',
-    border: 'rgba(16,24,38,0.10)',
-    borderStrong: 'rgba(60,120,180,0.28)',
-    fg: '#1A2740',
-    fgSoft: '#32445C',
-    fgMuted: '#5A6C82',
-    primary: '#3C78B4',
-    primarySoft: 'rgba(60,120,180,0.10)',
-    primaryGlow: 'rgba(60,120,180,0.20)',
-    secondary: '#4A6B8A',
-    secondaryGlow: 'rgba(74,107,138,0.20)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
 };
 
 const indigoMineral: ThemeDefinition = {
   id: 'indigo-mineral',
   name: 'Indigo Mineral',
   swatch: ['#101B3A', '#4FD1C5', '#9F7AEA'],
-  dark: {
+  ambientGlow: 0.65,
+  filmVeil: 12,
+  tokens: {
     bg: '#101B3A',
     bgSoft: '#0A0F22',
     surface: '#18264E',
@@ -393,31 +379,16 @@ const indigoMineral: ThemeDefinition = {
     onPrimary: '#04262B',
     onSecondary: '#170A33',
   },
-  light: {
-    bg: '#F0F7FA',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(16,27,58,0.03)',
-    border: 'rgba(16,27,58,0.10)',
-    borderStrong: 'rgba(40,160,150,0.28)',
-    fg: '#18264E',
-    fgSoft: '#2E4066',
-    fgMuted: '#566680',
-    primary: '#1F9E93',
-    primarySoft: 'rgba(31,158,147,0.10)',
-    primaryGlow: 'rgba(31,158,147,0.20)',
-    secondary: '#6E48C4',
-    secondaryGlow: 'rgba(110,72,196,0.20)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
 };
 
 const sandstoneInk: ThemeDefinition = {
   id: 'sandstone-ink',
   name: 'Sandstone Ink',
   swatch: ['#14110D', '#D9B98A', '#F2E3C8'],
-  dark: {
+  // Warm accents, but near-white ones — eased so the film keeps its depth.
+  ambientGlow: 0.75,
+  filmVeil: 8,
+  tokens: {
     bg: '#14110D',
     bgSoft: '#0C0A08',
     surface: '#221D16',
@@ -435,38 +406,30 @@ const sandstoneInk: ThemeDefinition = {
     onPrimary: '#241B0D',
     onSecondary: '#2A2113',
   },
-  light: {
-    bg: '#FAF6EF',
-    bgSoft: '#FFFFFF',
-    surface: '#FFFFFF',
-    surfaceSoft: 'rgba(20,17,13,0.03)',
-    border: 'rgba(20,17,13,0.10)',
-    borderStrong: 'rgba(160,130,90,0.30)',
-    fg: '#221D16',
-    fgSoft: '#453D30',
-    fgMuted: '#6E6455',
-    primary: '#9A7B45',
-    primarySoft: 'rgba(154,123,69,0.10)',
-    primaryGlow: 'rgba(154,123,69,0.20)',
-    secondary: '#8A6B3A',
-    secondaryGlow: 'rgba(138,107,58,0.20)',
-    onPrimary: '#FFFFFF',
-    onSecondary: '#FFFFFF',
-  },
 };
 
+/**
+ * The catalog, in the order it is offered. Teal Ember is the brand default and
+ * stays first (it is the palette the server-rendered HTML paints); Graphite
+ * Rose is the second option because it is the most-requested alternative.
+ */
 export const themes: ThemeDefinition[] = [
   tealEmber,
+  graphiteRose,
+  scarletNoir,
+  infernoEmber,
+  bumblebeeNoir,
+  solarSlate,
+  forestCopper,
   cobaltAurora,
   oceanMist,
   plumRadiance,
-  forestCopper,
-  graphiteRose,
-  solarSlate,
   glacierSteel,
   indigoMineral,
   sandstoneInk,
 ];
 
 export const defaultThemeId = 'teal-ember';
-export const defaultMode: Mode = 'dark';
+
+/** Every palette's film veil, as a CSS-ready percentage string. */
+export const defaultFilmVeil = '5%';
