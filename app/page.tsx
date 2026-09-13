@@ -30,7 +30,7 @@ export default function HomePage() {
       {/* ---------------- Hero ---------------- */}
       <section className="hero">
         <div className="container">
-          <div className="hero__grid hero__grid--author">
+          <div className="hero__grid hero__grid--single">
             <Reveal>
               <p className="eyebrow">{hero.eyebrow}</p>
               <h1 className="hero__title">
@@ -38,7 +38,7 @@ export default function HomePage() {
                 <span className="line gradient-text">{hero.titleGradient}</span>
                 <span className="line">{hero.titlePlainBottom}</span>
               </h1>
-              <p className="lead" style={{ maxWidth: 580 }}>{hero.intro}</p>
+              <p className="lead" style={{ maxWidth: 640 }}>{hero.intro}</p>
 
               <HeroScrollCue />
 
@@ -55,25 +55,6 @@ export default function HomePage() {
                 <Link href={hero.secondaryCta.href} className="btn btn--outline">
                   {hero.secondaryCta.label}
                 </Link>
-              </div>
-            </Reveal>
-
-            <Reveal delay={140} className="hero__author-reveal">
-              <div className="hero__author">
-                <div className="hero__author-glow" />
-                <Image
-                  src="/images/author-enhanced.jpg"
-                  alt="Dr. Fran Gaik"
-                  width={340}
-                  height={448}
-                  priority
-                  sizes="(max-width: 768px) 90vw, 440px"
-                  className="author-photo"
-                />
-                <p className="author-caption">
-                  <strong>{site.name}</strong>
-                  <span>Life Coach Doctor</span>
-                </p>
               </div>
             </Reveal>
           </div>

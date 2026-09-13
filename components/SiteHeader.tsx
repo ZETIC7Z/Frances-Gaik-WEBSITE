@@ -88,7 +88,7 @@ export default function SiteHeader() {
   const moreIsActive = practiceNav.some((item) => isActive(item.href));
 
   return (
-    <header className="fnav-header">
+    <header className={`fnav-header ${isScrolled ? 'fnav-header--scrolled' : ''}`}>
       {/* Floating pill navigation */}
       <nav
         className={`fnav-pill ${isScrolled ? 'fnav-pill--scrolled' : ''}`}

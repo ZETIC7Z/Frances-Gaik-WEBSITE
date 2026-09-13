@@ -329,35 +329,42 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
 /* ---------- Floating Pill Header & Navigation (Project 3005 Style) ---------- */
 .fnav-header {
   position: fixed;
-  top: 14px;
+  top: 0;
   left: 0;
   right: 0;
   z-index: 60;
   display: flex;
   justify-content: center;
   pointer-events: none;
+  padding: 0 24px;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fnav-header--scrolled {
+  top: 14px;
   padding: 0 16px;
 }
 
 .fnav-pill {
   pointer-events: auto;
   width: 100%;
-  max-width: 1140px;
-  border-radius: 999px;
-  padding: 7px 10px;
-  background: color-mix(in srgb, var(--surface) 78%, rgba(0, 0, 0, 0.75));
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border);
-  box-shadow: 0 14px 38px -8px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  max-width: 1400px;
+  border-radius: 20px;
+  padding: 14px 20px;
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .fnav-pill--scrolled {
-  max-width: 980px;
-  background: color-mix(in srgb, var(--bg) 88%, rgba(0, 0, 0, 0.88));
-  border-color: var(--border-strong);
-  box-shadow: 0 18px 46px -6px rgba(0, 0, 0, 0.9), 0 0 20px -4px var(--primary-glow);
+  max-width: 1120px;
+  padding: 8px 18px;
+  background: rgba(5, 12, 12, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 44px -8px rgba(0, 0, 0, 0.9), 0 0 24px -6px var(--primary-glow);
 }
 
 .fnav-pill__inner {
@@ -887,6 +894,7 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
   align-items: center;
 }
 .hero__grid--author { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }
+.hero__grid--single { grid-template-columns: 1fr; max-width: 820px; }
 .hero__author { display: flex; flex-direction: column; align-items: center; position: relative; }
 .hero__author-glow {
   position: absolute; inset: -12%;
