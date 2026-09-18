@@ -3,10 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-/** Video is ~10.23 s — auto-dismiss just after it finishes */
-const HOLD_MS = 10_300;
-/** Duration of the outro fade (ms) */
-const FADE_MS = 1200;
+/** Duration of the outro fade into the main site (ms) */
+const FADE_MS = 900;
 
 type Phase = 'showing' | 'outro' | 'hidden';
 
@@ -14,7 +12,7 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<Phase>('showing');
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Desktop only — on mobile skip immediately (before hydration CSS also hides it)
+  // Desktop only — on mobile skip immediately
   useEffect(() => {
     if (
       typeof window !== 'undefined' &&
@@ -25,48 +23,71 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
       setPhase('hidden');
       return;
     }
-
-    setPhase('showing');
-    // Fallback: dismiss after HOLD_MS if onEnded doesn't fire
-    const timer = window.setTimeout(() => {
-      setPhase((cur) => (cur === 'showing' ? 'outro' : cur));
-    }, HOLD_MS);
-    return () => window.clearTimeout(timer);
   }, []);
 
-  // Outro → hidden after fade
+  // Video playback management — strictly let the video fully finish before revealing main site
+  useEffect(() => {
+    if (phase === 'hidden') return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    let outroTriggered = false;
+    const triggerOutro = () => {
+      if (!outroTriggered) {
+        outroTriggered = true;
+        setPhase('outro');
+      }
+    };
+
+    // When the video finishes playing completely to its last frame
+    const handleEnded = () => {
+      triggerOutro();
+    };
+
+    video.addEventListener('ended', handleEnded);
+
+    // Fallback: only if video is completely stalled / errored for over 25 seconds
+    const safetyTimer = window.setTimeout(() => {
+      if (!video || video.ended || video.paused) {
+        triggerOutro();
+      }
+    }, 25_000);
+
+    // Ensure playback starts immediately
+    video.playbackRate = 1.0;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {});
+    }
+
+    return () => {
+      video.removeEventListener('ended', handleEnded);
+      window.clearTimeout(safetyTimer);
+    };
+  }, [phase === 'hidden']);
+
+  // Outro fade → hidden unmount, revealing the main site smoothly
   useEffect(() => {
     if (phase !== 'outro') return;
-    const timer = window.setTimeout(() => setPhase('hidden'), FADE_MS);
+    const timer = window.setTimeout(() => {
+      setPhase('hidden');
+    }, FADE_MS);
     return () => window.clearTimeout(timer);
   }, [phase]);
 
-  // Any user interaction skips early
+  // Lock scrolling strictly while splash is actively showing — unlock immediately on outro or hidden
   useEffect(() => {
-    if (phase !== 'showing') return;
-    const dismiss = () => setPhase('outro');
-    window.addEventListener('pointerdown', dismiss, { passive: true });
-    window.addEventListener('keydown', dismiss);
-    window.addEventListener('wheel', dismiss, { passive: true });
-    window.addEventListener('touchstart', dismiss, { passive: true });
+    if (typeof document === 'undefined') return;
+    if (phase === 'showing') {
+      document.body.classList.add('is-splashing');
+    } else {
+      document.body.classList.remove('is-splashing');
+    }
     return () => {
-      window.removeEventListener('pointerdown', dismiss);
-      window.removeEventListener('keydown', dismiss);
-      window.removeEventListener('wheel', dismiss);
-      window.removeEventListener('touchstart', dismiss);
+      document.body.classList.remove('is-splashing');
     };
   }, [phase]);
-
-  // Lock scrolling while splash is active
-  useEffect(() => {
-    document.body.classList.toggle('is-splashing', phase !== 'hidden');
-    return () => document.body.classList.remove('is-splashing');
-  }, [phase]);
-
-  // Natural outro when the video reaches its end
-  const handleVideoEnded = () => {
-    setPhase((cur) => (cur === 'showing' ? 'outro' : cur));
-  };
 
   return (
     <>
@@ -75,73 +96,66 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
       <AnimatePresence>
         {phase !== 'hidden' && (
           <motion.div
-            className={`splash ${phase === 'outro' ? 'splash--outro' : ''}`}
+            className="splash"
             role="status"
             aria-label="Dr. Frances Gaik — Intro"
             initial={{ opacity: 1 }}
+            animate={{ opacity: phase === 'outro' ? 0 : 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: FADE_MS / 1000, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: FADE_MS / 1000, ease: 'easeInOut' }}
             style={{
               position: 'fixed',
               inset: 0,
-              zIndex: 9999,
-              background: '#000',
+              width: '100vw',
+              height: '100vh',
+              maxWidth: '100vw',
+              maxHeight: '100vh',
+              zIndex: 999999,
+              background: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden',
             }}
           >
-            {/* Full-screen splash video — preload=auto with hardware GPU compositing */}
-            <video
-              ref={videoRef}
-              src="/brand/splash.mp4"
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              onEnded={handleVideoEnded}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transform: 'translateZ(0)',
-                WebkitTransform: 'translateZ(0)',
-                willChange: 'transform, opacity',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-              }}
-            />
-
-            {/* Cinematic vignette overlay */}
+            {/* Centered responsive video wrapper — no scrollbars, 100% viewport contained */}
             <div
               style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.60) 100%)',
-                pointerEvents: 'none',
-              }}
-            />
-
-            {/* Skip hint */}
-            <p
-              style={{
-                position: 'absolute',
-                bottom: 28,
-                right: 32,
-                color: 'rgba(255,255,255,0.40)',
-                fontSize: 12,
-                letterSpacing: '0.08em',
-                fontFamily: 'inherit',
-                pointerEvents: 'none',
-                userSelect: 'none',
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                maxWidth: '100vw',
+                maxHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
               }}
             >
-              Click anywhere to skip
-            </p>
+              <video
+                ref={videoRef}
+                src="/brand/splash.mp4"
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                  objectPosition: 'center',
+                  display: 'block',
+                  margin: 'auto',
+                  transform: 'translateZ(0)',
+                  WebkitTransform: 'translateZ(0)',
+                  willChange: 'transform, opacity',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

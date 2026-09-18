@@ -288,7 +288,17 @@ export default function SiteHeader() {
               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="fnav-drawer__head">
-                <span className="fnav-drawer__brand">Dr. Fran Gaik</span>
+                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} aria-label="Dr. Frances Gaik — home" className="fnav-drawer__logo-link">
+                  <Image
+                    src="/brand/logo-amber.png"
+                    alt="Dr. Frances Gaik"
+                    width={220}
+                    height={52}
+                    priority
+                    className="fnav-drawer__logo"
+                    style={{ height: 'auto', maxHeight: 44, width: 'auto', maxWidth: 200 }}
+                  />
+                </Link>
                 <button
                   type="button"
                   className="icon-btn icon-btn--sm"

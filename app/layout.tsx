@@ -131,7 +131,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       {/* The scroll lock for the signature intro is applied from JavaScript (in
           `SplashGate`), never server-rendered — a visitor without JavaScript is
           never left locked on a splash the CSS timeline has already faded. */}
-      <body>
+      <body suppressHydrationWarning>
         {/* Structured data travels with every page, so the author, the practice
             and both books are describable to a search engine or an assistant
             without one. `<` is escaped because this string is injected into

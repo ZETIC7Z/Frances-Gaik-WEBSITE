@@ -53,9 +53,14 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
 body {
   margin: 0;
+  overflow-x: clip;
+  overscroll-behavior-y: auto;
   /* Keep the fixed ambient film inside the page stacking context: it stays
      behind content but above the body's background, so the MP4 is actually
      visible instead of disappearing behind the root canvas. */
@@ -77,8 +82,36 @@ body {
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
+
+/* While intro splash is playing: lock scroll without breaking mouse wheel after splash */
+body.is-splashing {
+  overflow: hidden !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+body.is-splashing::-webkit-scrollbar,
+html:has(body.is-splashing)::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Also ensure no scrollbar appears on html itself during splash */
+html:has(body.is-splashing) {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+}
+
+body.is-splashing .ambient {
+  display: none !important;
+}
+
+body.is-splashing .rvwall__track {
+  animation-play-state: paused !important;
+}
+
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
@@ -645,11 +678,20 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
   margin-bottom: 16px;
 }
 
-.fnav-drawer__brand {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--secondary);
+.fnav-drawer__logo-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.fnav-drawer__logo {
+  display: block;
+  height: auto;
+  max-height: 44px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
 }
 
 .fnav-drawer__section {
