@@ -278,14 +278,15 @@ export default function SiteHeader() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
               onClick={() => setIsMobileMenuOpen(false)}
             />
             <motion.div
               className="fnav-drawer"
-              initial={{ opacity: 0, y: -16, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -16, scale: 0.98 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280, mass: 0.85 }}
             >
               <div className="fnav-drawer__head">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} aria-label="Dr. Frances Gaik — home" className="fnav-drawer__logo-link">
@@ -330,7 +331,7 @@ export default function SiteHeader() {
               {/* Practice Submenu */}
               <div className="fnav-drawer__section">
                 <span className="fnav-drawer__section-title">Practice & Resources</span>
-                <div className="fnav-drawer__links">
+                <div className="fnav-drawer__links fnav-drawer__links--grid">
                   {practiceNav.map((item) => (
                     <Link
                       key={item.href}

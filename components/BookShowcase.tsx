@@ -236,12 +236,16 @@ function BookModal({ book, onClose }: { book: Book; onClose: () => void }) {
           </div>
         </div>
 
-        <h3 style={{ marginTop: 26, fontSize: 18 }}>Available from these stores</h3>
-        <StoreButtons book={book} />
+        <div className="modal-section modal-section--stores">
+          <h3 className="modal-section-title">Available from these stores</h3>
+          <StoreButtons book={book} />
+        </div>
 
-        <h3 style={{ marginTop: 26, fontSize: 18 }}>Reviews &amp; commentary</h3>
-        <div style={{ marginTop: 14 }}>
-          <ReviewWall reviews={reviewsForBook(book.id)} size="small" />
+        <div className="modal-section modal-section--reviews">
+          <h3 className="modal-section-title">Reviews &amp; commentary</h3>
+          <div style={{ marginTop: 14 }}>
+            <ReviewWall reviews={reviewsForBook(book.id)} size="small" />
+          </div>
         </div>
       </motion.div>
     </motion.div>

@@ -110,6 +110,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   // One mode, always dark: this tints the browser chrome on the site's own
   // background and tells the OS to render form controls and scrollbars to
   // match, rather than following the visitor's system preference.
