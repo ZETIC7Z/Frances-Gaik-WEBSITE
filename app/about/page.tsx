@@ -29,17 +29,46 @@ export default function AboutPage() {
         <div className="container">
           <div className="split" style={{ alignItems: 'start' }}>
             <Reveal>
-              <div className="about-photo-wrap">
-                <Image
-                  src="/images/author-enhanced.jpg"
-                  alt="Dr. Fran Gaik"
-                  width={200}
-                  height={264}
-                  className="author-photo"
-                  style={{ width: 'min(320px, 74vw)', height: 'auto' }}
-                />
-                <p className="mono" style={{ fontSize: 10.5, letterSpacing: '.2em', color: 'var(--fg-muted)', textAlign: 'center', marginTop: 12 }}>
-                  {site.fullName}
+              <div
+                className="about-photo-wrap"
+                style={{
+                  width: 'fit-content',
+                  maxWidth: 'min(320px, 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <div className="author-photo-card" tabIndex={0}>
+                  <div className="author-photo-card__inner">
+                    <Image
+                      src="/images/author-enhanced.jpg"
+                      alt="Dr. Frances Gaik"
+                      width={320}
+                      height={422}
+                      className="author-photo"
+                      priority
+                      style={{ width: '100%', height: 'auto', display: 'block' }}
+                    />
+                    <div className="author-photo-card__sheen" />
+                    <div className="author-photo-card__border" />
+                  </div>
+                </div>
+                <p
+                  style={{
+                    fontSize: 13,
+                    letterSpacing: '.12em',
+                    color: 'var(--fg-muted)',
+                    textAlign: 'center',
+                    marginTop: 14,
+                    fontFamily: 'var(--font-mono)',
+                    textTransform: 'uppercase',
+                    lineHeight: 1.6,
+                    width: '100%',
+                  }}
+                >
+                  Dr. Frances Gaik<br />
+                  <span style={{ fontSize: 11, letterSpacing: '.15em', opacity: 0.75 }}>PsyD, LCPC</span>
                 </p>
               </div>
             </Reveal>

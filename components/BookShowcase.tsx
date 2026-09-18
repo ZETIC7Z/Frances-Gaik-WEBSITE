@@ -19,6 +19,20 @@ function RatingLabel({ rating, stars }: { rating?: string; stars?: number }) {
   );
 }
 
+const ALL_PARTNER_LOGOS = [
+  { name: 'Amazon', src: '/stores/amazon.png', width: 146, height: 44 },
+  { name: 'Singing Dragon', src: '/stores/singing-dragon.png', width: 176, height: 44 },
+  { name: 'Hachette UK', src: '/stores/hachette.png', width: 254, height: 44 },
+  { name: 'Bookshop.org', src: '/stores/bookshop.png', width: 315, height: 44 },
+  { name: 'Walmart', src: '/stores/walmart.png', width: 134, height: 44 },
+  { name: 'AbeBooks', src: '/stores/abebooks.png', width: 157, height: 44 },
+  { name: 'eBay', src: '/stores/ebay.png', width: 110, height: 44 },
+  { name: 'Rakuten Kobo', src: '/stores/kobo.png', width: 236, height: 44 },
+  { name: 'Goodreads', src: '/stores/goodreads.png', width: 204, height: 44 },
+  { name: 'Dorrance Bookstore', src: '/stores/dorrance.png', width: 168, height: 44 },
+  { name: 'Booktopia', src: '/stores/booktopia.png', width: 200, height: 44 },
+];
+
 /**
  * The shops a book can be bought from, as each shop's own logo and nothing
  * else — no written name, no edition note. Every button is a plain white plate
@@ -176,18 +190,31 @@ function BookModal({ book, onClose }: { book: Book; onClose: () => void }) {
           </button>
         </div>
 
-        {/* Cover first, copy beneath it: on a phone the two-column version
-            squeezed the description into a strip a few words wide. */}
+        {/* 3D Book cover matching main page and CodePen VYwqwXN */}
         <div className="modal-grid">
           <div className="modal-grid__cover">
-            <Image
-              src={book.cover}
-              alt={`${book.title} cover`}
-              width={400}
-              height={600}
-              loading="lazy"
-              unoptimized={book.cover.startsWith('http')}
-            />
+            <div className="books__cover books__cover--modal" tabIndex={0}>
+              <div className="books__back-cover" />
+              <div className="books__inside">
+                <div className="books__page" />
+                <div className="books__page" />
+                <div className="books__page" />
+              </div>
+              <div className="books__image">
+                <Image
+                  src={book.cover}
+                  alt={`${book.title} cover`}
+                  width={400}
+                  height={600}
+                  loading="eager"
+                  priority
+                  unoptimized={book.cover.startsWith('http')}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+                <div className="books__effect" />
+                <div className="books__light" />
+              </div>
+            </div>
           </div>
           <div className="modal-grid__copy">
             <div className="bshow__meta">
@@ -247,15 +274,39 @@ export default function BookShowcase() {
       <div className="glass bshow">
         <div className="bshow__stage">
           <div className="bshow__cover">
-            <Image
-              src={book.cover}
-              alt={`${book.title} cover`}
-              width={400}
-              height={600}
-              priority
-              unoptimized={book.cover.startsWith('http')}
-              style={{ width: '100%', height: 'auto' }}
-            />
+            <div
+              className="books__cover"
+              onClick={() => setOpenId(book.id)}
+              title="Click to look inside"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setOpenId(book.id);
+                }
+              }}
+            >
+              <div className="books__back-cover" />
+              <div className="books__inside">
+                <div className="books__page" />
+                <div className="books__page" />
+                <div className="books__page" />
+              </div>
+              <div className="books__image">
+                <Image
+                  src={book.cover}
+                  alt={`${book.title} cover`}
+                  width={400}
+                  height={600}
+                  priority
+                  unoptimized={book.cover.startsWith('http')}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+                <div className="books__effect" />
+                <div className="books__light" />
+              </div>
+            </div>
           </div>
 
           <div className="bshow__info">
@@ -277,37 +328,97 @@ export default function BookShowcase() {
 
             <div className="bshow__controls">
               <button type="button" className="btn btn--primary" onClick={() => setOpenId(book.id)}>
-                Look inside <ArrowRight size={16} />
+                Buy Now <ArrowRight size={16} />
               </button>
               <button type="button" className="icon-btn" onClick={() => go(-1)} aria-label="Previous book">←</button>
               <button type="button" className="icon-btn" onClick={() => go(1)} aria-label="Next book">→</button>
               <Dots count={books.length} active={index} onSelect={setIndex} />
             </div>
 
-            {/* Where to buy, as the shops' own logos rather than a written
-                list — reachable without opening the dialog on any screen. */}
-            <div className="bshow__stores">
-              <span className="bshow__stores-label">Buy from</span>
-              <StoreButtons book={book} variant="row" />
+            {/* Partner Stores Infinite Loop Marquee - Display only, non-clickable, identical across all books */}
+            <div className="partner-stores-wrap">
+              <span className="partner-stores-label">Partner Stores:</span>
+              <div className="partner-marquee">
+                <div className="partner-marquee__track" aria-hidden="true">
+                  {ALL_PARTNER_LOGOS.concat(ALL_PARTNER_LOGOS).map((s, idx) => (
+                    <div
+                      key={`${s.name}-${idx}`}
+                      className="partner-store-badge"
+                      title={s.name}
+                    >
+                      <Image
+                        src={s.src}
+                        alt={s.name}
+                        width={s.width}
+                        height={s.height}
+                        unoptimized
+                        className="partner-store-logo"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* All books below the big preview */}
-      <div className="bshow__thumbs">
-        {books.map((b, i) => (
-          <button
-            key={b.id}
-            type="button"
-            className={`bshow__thumb${i === index ? ' bshow__thumb--active' : ''}`}
-            onClick={() => setIndex(i)}
-            aria-label={`Show ${b.title}`}
-            aria-pressed={i === index}
-          >
-            <Image src={b.cover} alt="" width={96} height={144} loading="lazy" unoptimized={b.cover.startsWith('http')} style={{ width: '100%', height: 'auto' }} />
-          </button>
-        ))}
+      {/* 3D Animated Book Shelf Collection (from CodePen filipz/pen/PwwbrYo) */}
+      <div className="shelf-container" aria-label="Book Collection Shelf">
+        <div className="shelf-books">
+          {books.map((b, i) => {
+            const isActive = i === index;
+            return (
+              <div
+                key={b.id}
+                className={`shelf-book ${isActive ? 'shelf-book--active' : ''}`}
+                onMouseEnter={() => setIndex(i)}
+                onClick={() => {
+                  setIndex(i);
+                  setOpenId(b.id);
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Select ${b.title}`}
+                title={`Click to view ${b.title} in full screen`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setIndex(i);
+                    setOpenId(b.id);
+                  }
+                }}
+              >
+                <div className="shelf-book__wrapper">
+                  <div className="books__cover shelf-book__cover">
+                    <div className="books__back-cover" />
+                    <div className="books__inside">
+                      <div className="books__page" />
+                      <div className="books__page" />
+                      <div className="books__page" />
+                    </div>
+                    <div className="books__image">
+                      <Image
+                        src={b.cover}
+                        alt={b.title}
+                        width={120}
+                        height={180}
+                        loading="lazy"
+                        unoptimized={b.cover.startsWith('http')}
+                        style={{ width: '100%', height: 'auto', display: 'block' }}
+                      />
+                      <div className="books__effect" />
+                      <div className="books__light" />
+                    </div>
+                  </div>
+                  {/* Contact shadow where book meets shelf */}
+                  <div className="book-shadow__item" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="shelf" />
       </div>
 
       <AnimatePresence>

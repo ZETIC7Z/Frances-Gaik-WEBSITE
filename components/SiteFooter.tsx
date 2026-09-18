@@ -10,10 +10,10 @@ export default function SiteFooter() {
         <div className="footer__grid">
           <div>
             <Image
-              src="/brand/logo-amber.png"
-              alt="Dr. Fran Gaik signature"
-              width={190}
-              height={45}
+              src="/brand/dr-frances-gaik.svg"
+              alt="Dr. Frances Gaik signature"
+              width={220}
+              height={57}
               className="footer__logo"
             />
             <p style={{ fontSize: 14, maxWidth: 300 }}>
@@ -87,8 +87,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="footer__base">
-          <span>© {new Date().getFullYear()} {site.name}.</span>
-          <span className="mono" style={{ letterSpacing: '.08em' }}>{site.name}</span>
+          <span>© {new Date().getFullYear()} Dr. Frances Gaik. All rights reserved.</span>
         </div>
       </div>
     </footer>

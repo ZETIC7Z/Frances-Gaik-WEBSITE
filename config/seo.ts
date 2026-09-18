@@ -52,7 +52,7 @@ export const keywords = [
   'clinical hypnosis',
   'life coaching',
   'collaborative divorce coaching',
-  'LCPC therapist Willowbrook Illinois',
+  'LCPC therapist Florida',
   'author website',
 ];
 
@@ -224,8 +224,7 @@ export function structuredData() {
         founder: { '@id': personId },
         address: {
           '@type': 'PostalAddress',
-          addressLocality: 'Willowbrook',
-          addressRegion: 'IL',
+          addressRegion: 'FL',
           addressCountry: 'US',
         },
         areaServed: { '@type': 'Country', name: 'United States' },

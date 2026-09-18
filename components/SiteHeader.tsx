@@ -107,10 +107,10 @@ export default function SiteHeader() {
               />
             </div>
             <Image
-              src="/brand/logo-amber.png"
-              alt="Dr. Fran Gaik — signature"
+              src="/brand/dr-frances-gaik.svg"
+              alt="Dr. Frances Gaik"
               width={200}
-              height={48}
+              height={52}
               priority
               className="fnav-brand__logo"
             />

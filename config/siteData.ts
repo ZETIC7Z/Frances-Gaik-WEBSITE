@@ -6,14 +6,14 @@
  */
 
 export const site = {
-  name: 'Dr. Fran Gaik',
+  name: 'Dr. Frances Gaik',
   fullName: 'Dr. Frances Gaik, PsyD, LCPC',
   role: 'Author • Researcher • Qigong Practitioner',
-  location: 'Willowbrook, Illinois',
+  location: 'Florida, USA',
   phone: '(630) 240-7511',
   phoneHref: 'tel:+16302407511',
-  email: 'info@lifecoachdoc.net',
-  emailAlt: 'ibitmog1@aol.com',
+  email: 'Ibitmog1@aol.com',
+  emailAlt: 'Ibitmog1@aol.com',
   sourceSite: 'https://www.lifecoachdoc.net',
   syncedAt: '2026-09-12',
   bookCount: 2,
@@ -56,15 +56,13 @@ export const stats = [
 /** Full biography text copied from the author's own site (welcome.html). */
 export const about = {
   intro:
-    'I am a Licensed Clinical Professional Counselor (LCPC) and hold degrees in Philosophy, Clinical Psychology and Paralegal Studies. I am also a Board Certified Professional Counselor, a Certified Personal Coach, and a Fellow in the Collaborative Law Institute of Illinois. I am a member of the American Society of Clinical Hypnosis (ASCH) and the American Psychotherapy Association (APA).',
+    'I am a Licensed Clinical Professional Counselor (LCPC) and hold degrees in Philosophy, Clinical Psychology and Paralegal Studies. I am also a Board Certified Professional Counselor, a Certified Personal Coach, and a Fellow in the Collaborative Law Institute of Illinois. I have also worked as an executive in the insurance industry for many years, as well as the legal system, focusing in family law.',
   credentials: [
     'Licensed Clinical Professional Counselor (LCPC)',
     'Degrees in Philosophy, Clinical Psychology and Paralegal Studies',
     'Board Certified Professional Counselor',
     'Certified Personal Coach',
     'Fellow in the Collaborative Law Institute of Illinois',
-    'Member, American Society of Clinical Hypnosis (ASCH)',
-    'Member, American Psychotherapy Association (APA)',
   ],
   experience: [
     'I have owned my own business, working in the insurance industry for over 25 years in the area of health administration, including marketing, underwriting and claims adjudication. I possess extensive experience in coaching, selection, training and management team development. I have also worked in the Cook County Family Court system. I am familiar with the pain of family disruption. I have been involved in major litigation and successfully accomplished what I set out to do. I am an effective Change Agent in both the restructure of corporate and personal dynamics and my experience in these areas has been critical in helping others to move beyond chaos and obstacles, avoid pitfalls and to achieve goals. I have worked successfully with both men and women on an individual basis as well as with relationship.',
@@ -296,11 +294,10 @@ export function bookForReview(review: Review) {
 export const contact = {
   heading: 'Contact the Author',
   lead: 'To reach Dr. Gaik — for Qigong seminars, book questions, or professional inquiries — you can email to obtain a time to call.',
-  note: 'Office located in Willowbrook, IL.',
+  note: 'Office located in Florida.',
   phones: [{ label: 'Phone', value: '(630) 240-7511', href: 'tel:+16302407511' }],
   emails: [
-    { label: 'Email', value: 'info@lifecoachdoc.net', href: 'mailto:info@lifecoachdoc.net' },
-    { label: 'Email', value: 'ibitmog1@aol.com', href: 'mailto:ibitmog1@aol.com' },
+    { label: 'Email', value: 'Ibitmog1@aol.com', href: 'mailto:Ibitmog1@aol.com' },
   ],
 } as const;
 
