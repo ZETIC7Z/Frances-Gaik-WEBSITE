@@ -14,7 +14,15 @@ export default function BackToTop() {
 
   useEffect(() => {
     let frame: number | null = null;
-    const check = () => setShown(window.scrollY > window.innerHeight * 0.6);
+    const check = () => {
+      const doc = document.documentElement;
+      const scrollHeight = doc.scrollHeight;
+      const clientHeight = window.innerHeight;
+      const scrollY = window.scrollY || doc.scrollTop;
+      // Trigger only when reaching near the bottom of the page (within 450px of the end)
+      const isAtBottom = scrollHeight > clientHeight + 250 && (scrollY + clientHeight >= scrollHeight - 450);
+      setShown(isAtBottom);
+    };
     const onScroll = () => {
       if (frame !== null) return;
       frame = window.requestAnimationFrame(() => {

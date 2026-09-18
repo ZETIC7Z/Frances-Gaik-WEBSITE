@@ -40,7 +40,9 @@ export default function HomePage() {
               </h1>
               <p className="lead" style={{ maxWidth: 640 }}>{hero.intro}</p>
 
-              <HeroScrollCue />
+              <div className="hero__scroll-cue--mobile-only">
+                <HeroScrollCue />
+              </div>
 
               <div className="hero__ctas">
                 <Link href={hero.primaryCta.href} className="btn btn--primary">
@@ -61,6 +63,10 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
+        </div>
+
+        <div className="hero__scroll-cue--desktop-only">
+          <HeroScrollCue />
         </div>
       </section>
 

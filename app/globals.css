@@ -57,6 +57,37 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
 }
+
+/* Strict scroll lock and scrollbar suppression before and during splash */
+html:not(.scrollable),
+html:not(.scrollable) body {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html:not(.scrollable)::-webkit-scrollbar,
+html:not(.scrollable) body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Restore scrollbar once splash has finished (class added by SplashGate) */
+html.scrollable {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 40%, transparent) transparent;
+}
+html.scrollable::-webkit-scrollbar {
+  display: block;
+  width: 6px;
+}
+html.scrollable::-webkit-scrollbar-track { background: transparent; }
+html.scrollable::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 99px;
+}
+
 body {
   margin: 0;
   overflow-x: clip;
@@ -84,7 +115,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* While intro splash is playing: lock scroll without breaking mouse wheel after splash */
 body.is-splashing {
   overflow: hidden !important;
   height: 100vh !important;
@@ -96,12 +126,6 @@ html:has(body.is-splashing)::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
-}
-
-/* Also ensure no scrollbar appears on html itself during splash */
-html:has(body.is-splashing) {
-  overflow: hidden !important;
-  scrollbar-width: none !important;
 }
 
 body.is-splashing .ambient {
@@ -875,94 +899,7 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
 .palette__swatch:hover { transform: translateY(-2px); border-color: var(--border-strong); }
 .palette__swatch--active { border-color: var(--primary); box-shadow: 0 0 14px -4px var(--primary-glow); }
 
-/* ---------- Floating phone navigation ---------- */
-/* The phone navigation hovers over the page as a pill rather than sitting in a
-   bar across the bottom edge: it wears the site's own rounded, blurred,
-   theme-lit shape, and — the part that earns its place — it slides off the
-   bottom of the screen while the visitor reads downward and comes straight back
-   on any scroll up. So it is present whenever a thumb reaches for it, and never
-   covers the line being read. */
-.fnav {
-  position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
-  z-index: 59;
-  display: none;
-  max-width: calc(100vw - 16px);
-  transition: transform .4s cubic-bezier(.22, 1, .36, 1), opacity .28s ease;
-}
-.fnav--away { transform: translate(-50%, calc(100% + 34px)); opacity: 0; pointer-events: none; }
-.fnav__pill {
-  display: flex; align-items: center; gap: 3px;
-  padding: 7px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .85);
-  animation: fnav-in .5s cubic-bezier(.22, 1, .36, 1) both;
-}
-.fnav__tab {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  flex: 1 1 auto; min-width: 0;
-  padding: 9px 11px;
-  border-radius: 999px;
-  color: var(--fg-muted);
-  font-size: 10px; font-weight: 700; letter-spacing: .01em;
-  white-space: nowrap;
-  transition: color .2s ease, background .2s ease, transform .2s ease;
-}
-.fnav__tab svg { width: 22px; height: 22px; }
-.fnav__tab:hover { color: var(--fg); }
-.fnav__tab:active { transform: scale(.94); }
-.fnav__tab--active, .fnav__tab--active:hover { background: var(--primary); color: var(--on-primary); }
-
-/* The pill has to fit seven destinations (five pages, Theme and More) on every
-   phone that exists, including a 320px one, without shrinking the tap targets
-   below a thumb's reach. Labels are the first thing to go: below 520px the marks
-   carry the bar on their own, each one still named for screen readers and on
-   hover. Above that width there is room for the wording too. */
-@media (max-width: 519px) {
-  .fnav__tab { padding: 12px 10px; gap: 0; }
-  .fnav__tab span { display: none; }
-  .fnav__tab svg { width: 23px; height: 23px; }
-}
-
-/* On a tablet there is room for a more generous bar. */
-@media (min-width: 769px) and (max-width: 1240px) {
-  .fnav__tab { padding: 10px 20px; font-size: 11px; }
-  .fnav__tab svg { width: 23px; height: 23px; }
-}
-
-/* The sheet rises out of the pill, so a menu opens where the thumb already is. */
-.fnav-scrim { position: fixed; inset: 0; z-index: 58; background: color-mix(in srgb, var(--bg) 58%, transparent); backdrop-filter: blur(3px); animation: fnav-fade .22s ease both; }
-.fnav-sheet {
-  position: fixed; left: 10px; right: 10px;
-  bottom: calc(14px + var(--fnav-h) + 14px + env(safe-area-inset-bottom, 0px));
-  z-index: 60;
-  max-height: min(64vh, 470px); overflow: auto;
-  padding: 14px;
-  border-radius: 22px;
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 28px 70px -28px rgba(0,0,0,.8);
-  animation: fnav-up .26s cubic-bezier(.22, 1, .36, 1) both;
-}
-.fnav-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px 2px 8px; }
-.fnav-sheet__title { font-family: var(--font-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--primary); }
-.fnav-sheet__links { display: flex; flex-direction: column; gap: 2px; }
-.fnav-sheet__links a { padding: 11px 12px; border-radius: 12px; font-size: 15px; font-weight: 600; color: var(--fg-soft); }
-.fnav-sheet__links a:hover { background: var(--surface-soft); color: var(--fg); }
-.fnav-sheet__links a[aria-current='page'] { color: var(--primary); background: var(--primary-soft); }
-/* The theme sheet is a picker, not a list: bigger plates, room for the swatches
-   to wrap, and the same row the desktop header shows. */
-.fnav-sheet--theme .palette__row { gap: 9px; }
-.fnav-sheet--theme .palette__swatch { padding: 7px 9px; }
-.fnav-sheet--theme .palette__swatch i { width: 13px; height: 13px; }
 .icon-btn--sm { width: 32px; height: 32px; }
-@keyframes fnav-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes fnav-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fnav-up { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: none; } }
 
 /* ---------- Back to top ---------- */
 /* Apple-style "Back to top" pill: appears once the visitor has read below the
@@ -1049,11 +986,11 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
 
 .hero__ctas { display: flex; flex-wrap: wrap; gap: 14px; }
 
-/* Hero scroll cue — sits in the open space beside the intro copy (not pinned to
-   the viewport) and fades away the moment the visitor starts scrolling. */
+/* Hero scroll cue — sits centered at the bottom of the hero on desktop,
+   and in the flow on mobile, fading away once the visitor starts scrolling. */
 .hero__scroll-cue {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin: 18px 0 6px;
   color: var(--fg-muted);
   transition: opacity .55s ease, transform .55s ease, filter .55s ease;
@@ -1064,6 +1001,59 @@ p { margin: 0 0 16px; color: var(--fg-soft); }
 .hero__scroll-wheel { width: 18px; height: 28px; border: 1px solid currentColor; border-radius: 999px; position: relative; }
 .hero__scroll-wheel::after { content: ''; position: absolute; left: 50%; top: 5px; width: 3px; height: 6px; transform: translateX(-50%); border-radius: 99px; background: var(--primary); }
 .hero__scroll-label { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; }
+
+.hero__scroll-cue--desktop-only {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: calc(100vh - 84px);
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.hero__scroll-cue--desktop-only .hero__scroll-cue {
+  margin: 0;
+}
+.hero__scroll-cue--mobile-only {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .hero {
+    position: relative;
+    padding-top: 104px;
+    padding-bottom: 88px;
+  }
+  .hero__grid--single {
+    min-height: calc(100vh - 130px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  .stats {
+    margin-top: 64px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero__scroll-cue--desktop-only {
+    display: none !important;
+  }
+  .hero__scroll-cue--mobile-only {
+    display: block !important;
+    width: 100%;
+    margin: 8px 0 10px;
+  }
+  .hero__scroll-cue--mobile-only .hero__scroll-cue {
+    margin: 0 auto;
+    width: 100%;
+    justify-content: center;
+  }
+}
 
 .hero__visual { position: relative; min-height: 420px; }
 .hero__visual-glow {
@@ -2815,15 +2805,6 @@ body.is-splashing { overflow: hidden; }
 .reveal--in { opacity: 1; transform: none; filter: none; transition: opacity .7s ease, transform .7s ease, filter .7s ease; }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1240px) {
-  /* The header's nav gives way to the floating pill, and the page keeps a floor
-     of clearance so nothing ends up underneath it. */
-  .nav { display: none; }
-  .pmenu { display: none; }
-  .fnav { display: block; }
-  body { padding-bottom: calc(var(--fnav-h) + 14px + 22px + env(safe-area-inset-bottom, 0px)); }
-  .to-top { bottom: calc(var(--fnav-h) + 14px + 26px + env(safe-area-inset-bottom, 0px)); }
-}
 @media (max-width: 1080px) {
   .hero__grid, .hero__grid--author { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .hero__author { order: -1; }
@@ -2866,20 +2847,37 @@ body.is-splashing { overflow: hidden; }
   .btn { padding: 12px 20px; font-size: 14px; }
   .btn--sm { padding: 9px 15px; font-size: 13px; }
 
-  .hero { padding: 110px 0 44px; }
-  .hero__grid, .hero__grid--author { gap: 24px; grid-template-columns: 1fr !important; }
-  .hero__title { font-size: clamp(30px, 9vw, 42px); margin: 12px 0 14px; }
+  .hero {
+    padding: 78px 0 24px;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .hero__grid, .hero__grid--author {
+    gap: 10px;
+    grid-template-columns: 1fr !important;
+    min-height: calc(100svh - 116px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .eyebrow { font-size: 11px; margin-bottom: 6px; letter-spacing: 0.16em; }
+  .hero__title { font-size: clamp(23px, 6.8vw, 29px); line-height: 1.14; margin: 6px 0 8px; }
+  .lead { font-size: 13.5px; line-height: 1.45; margin-bottom: 8px; }
   .hero__scroll-label--desktop { display: none !important; }
   .hero__scroll-label--mobile { display: inline !important; }
-  .hero__scroll-cue { justify-content: center !important; margin: 20px auto 14px !important; width: 100% !important; }
-  .hero__chips { gap: 8px; margin: 16px 0 20px; }
-  .chip { font-size: 10.5px; padding: 6px 11px; }
-  .hero__ctas { flex-direction: column; width: 100%; gap: 10px; }
-  .hero__ctas .btn { width: 100%; }
+  .hero__scroll-cue { justify-content: center !important; margin: 8px auto 10px !important; width: 100% !important; }
+  .hero__scroll-wheel { width: 15px; height: 23px; }
+  .hero__scroll-label { font-size: 9px; }
+  .hero__chips { gap: 8px; margin: 8px 0 10px; }
+  .chip { font-size: 10px; padding: 5px 10px; }
+  .hero__ctas { flex-direction: column; width: 100%; gap: 8px; }
+  .hero__ctas .btn { width: 100%; padding: 10px 18px; font-size: 13.5px; }
   /* Hide author portrait on phones — keeps hero clean; full portrait is on /about */
   .hero__author-reveal { display: none !important; }
 
-  .stats { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 28px; }
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 48px; }
   .stat { padding: 14px 12px; }
   .stat__value { font-size: clamp(22px, 7vw, 28px); }
   .stat__label { font-size: 11.5px; line-height: 1.35; }
@@ -2960,11 +2958,26 @@ body.is-splashing { overflow: hidden; }
 @media (max-width: 420px) {
   .hero__ctas .btn { width: 100%; }
   .ambient__film { opacity: .68; }
-  .hero__scroll-cue { justify-content: flex-start; margin-top: 14px; }
-  .to-top { padding: 10px 16px 10px 13px; font-size: 13px; }
+  .hero__scroll-cue { justify-content: center !important; margin-top: 12px; }
   .footer__grid { grid-template-columns: 1fr 1fr; }
   .store-grid { gap: 6px; display: grid; grid-template-columns: repeat(2, 1fr); }
   .store-btn { --plate-h: 44px; --plate-logo: 18px; padding: 0 10px; border-radius: 10px; }
+}
+
+/* Mobile back-to-top: compact sleek pill in the bottom right matching red box */
+@media (max-width: 768px) {
+  .to-top {
+    position: fixed;
+    right: 16px;
+    bottom: 20px;
+    padding: 8px 14px 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 6px;
+    border-radius: 999px;
+  }
+  .to-top span { display: inline; }
+  .to-top svg { width: 14px; height: 14px; }
 }
 
 /* Desktop view only: on mobile view (< 768px), no intro splash is shown.
@@ -3019,3 +3032,15 @@ body.is-splashing { overflow: hidden; }
   50% { opacity: 0.8; transform: translateY(-20px) scale(1.2); }
   100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
 }
+
+/* Hide Next.js development badge / indicator */
+nextjs-portal,
+[data-nextjs-toast],
+#__next-build-watcher,
+[data-nextjs-dev-indicator] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+

@@ -6,7 +6,6 @@ import { SplashGate } from '@/components/SignatureSplash';
 import AmbientBackground from '@/components/AmbientBackground';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import MobileNav from '@/components/MobileNav';
 import BackToTop from '@/components/BackToTop';
 import CursorLeaves from '@/components/CursorLeaves';
 import RouteWarmup from '@/components/RouteWarmup';
@@ -128,6 +127,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="preload" href="/brand/splash.mp4" as="video" type="video/mp4" />
+      </head>
       {/* The scroll lock for the signature intro is applied from JavaScript (in
           `SplashGate`), never server-rendered — a visitor without JavaScript is
           never left locked on a splash the CSS timeline has already faded. */}
@@ -149,7 +151,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <main id="main">{children}</main>
             <SiteFooter />
             <BackToTop />
-            <MobileNav />
             <CursorLeaves />
             <RouteWarmup />
           </SplashGate>

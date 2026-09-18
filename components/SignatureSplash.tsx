@@ -21,6 +21,7 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
         window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     ) {
       setPhase('hidden');
+      document.documentElement.classList.add('scrollable');
       return;
     }
   }, []);
@@ -54,15 +55,30 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
       }
     }, 25_000);
 
-    // Ensure playback starts immediately
-    video.playbackRate = 1.0;
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {});
+    // Ensure video is buffered before playback to prevent initial stutter/hang
+    const startPlayback = () => {
+      if (!video) return;
+      video.playbackRate = 1.0;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    };
+
+    let startTimer: number | null = null;
+    if (video.readyState >= 3) {
+      startPlayback();
+    } else {
+      video.addEventListener('canplaythrough', startPlayback, { once: true });
+      video.addEventListener('canplay', startPlayback, { once: true });
+      startTimer = window.setTimeout(startPlayback, 600);
     }
 
     return () => {
       video.removeEventListener('ended', handleEnded);
+      video.removeEventListener('canplaythrough', startPlayback);
+      video.removeEventListener('canplay', startPlayback);
+      if (startTimer !== null) window.clearTimeout(startTimer);
       window.clearTimeout(safetyTimer);
     };
   }, [phase === 'hidden']);
@@ -83,6 +99,10 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
       document.body.classList.add('is-splashing');
     } else {
       document.body.classList.remove('is-splashing');
+    }
+    if (phase === 'hidden') {
+      // Restore the scrollbar now that the splash is fully gone
+      document.documentElement.classList.add('scrollable');
     }
     return () => {
       document.body.classList.remove('is-splashing');
@@ -106,10 +126,8 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
             style={{
               position: 'fixed',
               inset: 0,
-              width: '100vw',
-              height: '100vh',
-              maxWidth: '100vw',
-              maxHeight: '100vh',
+              width: '100%',
+              height: '100%',
               zIndex: 999999,
               background: '#000000',
               display: 'flex',
@@ -124,8 +142,6 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
                 position: 'relative',
                 width: '100%',
                 height: '100%',
-                maxWidth: '100vw',
-                maxHeight: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -135,7 +151,6 @@ export function SplashGate({ children }: { children: React.ReactNode }) {
               <video
                 ref={videoRef}
                 src="/brand/splash.mp4"
-                autoPlay
                 muted
                 playsInline
                 preload="auto"
